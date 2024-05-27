@@ -1,8 +1,5 @@
 spring:
   jpa:
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.MySQLDialect
     hibernate:
       naming:
         physical-strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
@@ -11,7 +8,25 @@ spring:
     url: jdbc:mysql://localhost:3306/hms_dev
     username: david
     password: david
+  mail:
+    port: 587
+    username: hospitalmanagementsystem1.0@gmail.com
+    password: facyjafjwivoqpki
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+        transport:
+          protocol: smtp
 
 hms:
   jwt:
     secret_key: 5367566B59703373357638792F423F4528482B4D6251655468576D5A71347437
+
+server:
+  servlet:
+    context-path: /api/v1
+
+
