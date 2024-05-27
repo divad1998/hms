@@ -59,9 +59,9 @@ public class Staff {
     @Length(max = 255, message = "Qualifications cannot exceed 255 characters.")
     private String qualifications;
 
-//    @OneToOne
-//    @JoinColumn(name = "user_id")
-//    private User user;
+    @OneToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
     @OneToOne
     @JoinColumn(name = "hospital_id")

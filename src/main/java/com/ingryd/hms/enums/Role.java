@@ -1,4 +1,4 @@
-package com.ingryd.hms.object;
+package com.ingryd.hms.enums;
 
 public enum Role {
     ADMIN,

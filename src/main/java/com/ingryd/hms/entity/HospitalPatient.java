@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 
 @Entity(name = "hospital_clients")
 @Data
-public class HospitalClient {
+public class HospitalPatient {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -33,7 +33,7 @@ public class HospitalClient {
 
     private LocalDateTime updatedAt;
 
-    public HospitalClient() {}
+    public HospitalPatient() {}
 
     @PrePersist
     protected void onCreate() {

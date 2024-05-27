@@ -26,7 +26,7 @@ public class Appointment {
 
     @ManyToOne
     @JoinColumn(name = "hospital_client_id", nullable = false)
-    private HospitalClient hospitalClient;
+    private HospitalPatient hospitalPatient;
 
     @Column(length = 50)
     @NotBlank(message = "Consultant's specialty can't be blank.")
