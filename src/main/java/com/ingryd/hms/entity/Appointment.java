@@ -7,6 +7,7 @@ import org.hibernate.validator.constraints.Length;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.function.Predicate;
 
 @Entity(name = "appointments")
 public class Appointment {

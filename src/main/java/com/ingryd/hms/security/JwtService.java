@@ -18,7 +18,7 @@ import java.util.function.Function;
 @Service
 public class JwtService {
 
-    @Value("${hms.jwt.secret_key}")
+    @Value("${hms.jwt.secret_key} ")
     private static String SECRET_KEY;
 
     private Key getSigningKey(){
