@@ -8,9 +8,9 @@ import org.hibernate.validator.constraints.Length;
 
 import java.time.LocalDateTime;
 
-@Entity(name = "hospital_clients")
+@Entity(name = "hospital_patients")
 @Data
-public class HospitalClient {
+public class HospitalPatient {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -33,7 +33,7 @@ public class HospitalClient {
 
     private LocalDateTime updatedAt;
 
-    public HospitalClient() {}
+    public HospitalPatient() {}
 
     @PrePersist
     protected void onCreate() {
