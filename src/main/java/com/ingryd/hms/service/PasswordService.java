@@ -30,8 +30,8 @@ public class PasswordService {
     }
 
     public void resetPassword(PasswordDTO dto){
-        if (tokenRepository.findByValue(dto.getValue())){
-            User user = tokenRepository.findTokenByValue(dto.getValue()).getUser();
+        if (tokenRepository.findByValue(dto.getValue()).isPresent()){
+            User user = tokenRepository.findByValue(dto.getValue()).get().getUser();
             assert user != null;
             if (dto.getNewPassword().equals(dto.getReconfirmPassword())) user.setPassword(dto.getNewPassword());
         }

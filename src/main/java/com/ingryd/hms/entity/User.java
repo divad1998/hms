@@ -51,6 +51,10 @@ public class User implements UserDetails {
 
     private LocalDateTime updatedAt;
 
+    private boolean enabled;
+
+
+
     public User() {}
 
     @PrePersist
@@ -90,7 +94,7 @@ public class User implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return enabled;
     }
 
     public void setPassword(String password) {

@@ -20,7 +20,7 @@ public class TokenService {
     protected int generateToken() {
         int token = new Random().nextInt(0,9999);
         //existing?
-        boolean exists = tokenRepository.findByValue(token); // Check for existing token based on your logic (e.g., in Token table)
+        boolean exists = tokenRepository.findByValue(token).isPresent();
         if (exists) {
             generateToken();
         }

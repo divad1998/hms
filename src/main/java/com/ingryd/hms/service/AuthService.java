@@ -5,6 +5,7 @@ import com.ingryd.hms.entity.Token;
 import com.ingryd.hms.entity.User;
 import com.ingryd.hms.enums.Role;
 import com.ingryd.hms.mapper.Mapper;
+import com.ingryd.hms.repository.TokenRepository;
 import com.ingryd.hms.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
@@ -17,6 +18,7 @@ public class AuthService {
     private final UserRepository userRepository;
     private final TokenService tokenService;
     private final MailService mailService;
+    private final TokenRepository tokenRepository;
 
     @Transactional
     public void clientSignup(UserDTO userDTO) throws Exception {
@@ -28,6 +30,12 @@ public class AuthService {
         Token savedToken = tokenService.saveToken(token, user); // Save token
         //send verification mail
         mailService.sendEmailVerificationMail(user, savedToken.getValue());
+    }
+
+    public void verifyEmail(int value){
+        Token token = tokenRepository.findByValue(value).get();
+        User user = token.getUser();
+        user.setEnabled(true);
     }
 
 }

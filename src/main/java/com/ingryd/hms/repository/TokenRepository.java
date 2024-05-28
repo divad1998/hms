@@ -3,7 +3,8 @@ package com.ingryd.hms.repository;
 import com.ingryd.hms.entity.Token;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.Optional;
+
 public interface TokenRepository extends JpaRepository<Token, Integer> {
-    boolean findByValue(int value);
-    Token findTokenByValue(int value);
+    Optional<Token> findByValue(int value);
 }

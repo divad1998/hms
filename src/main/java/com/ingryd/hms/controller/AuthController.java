@@ -36,7 +36,8 @@ public class AuthController {
     }
 
     @GetMapping("/verify_email")
-    public ResponseEntity<?> verifyEmail() {
+    public ResponseEntity<?> verifyEmail(int value) {
+        authService.verifyEmail(value);
         return ResponseEntity.ok().build(); //ToDo: refactor
     }
 
