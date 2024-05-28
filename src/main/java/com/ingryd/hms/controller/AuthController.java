@@ -1,7 +1,9 @@
 package com.ingryd.hms.controller;
 
+import com.ingryd.hms.dto.LoginDTO;
 import com.ingryd.hms.dto.Response;
 import com.ingryd.hms.dto.UserDTO;
+import com.ingryd.hms.entity.User;
 import com.ingryd.hms.service.AuthService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,10 +13,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("api/v1")
 public class AuthController {
     @Autowired
     private AuthService authService;
@@ -23,8 +26,9 @@ public class AuthController {
     @ResponseStatus(code = HttpStatus.CREATED)
     public ResponseEntity<?> clientSignup(@RequestBody @Valid UserDTO userDTO) throws Exception {
         authService.clientSignup(userDTO);
+        //build response on success
         Response response = new Response(true, "Signed up. Check mailbox to verify email quickly.", null);
-        Link loginLink = WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(this.getClass()).login()).withRel("login");
+        Link loginLink = WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(this.getClass()).login(null)).withRel("login");
         Link resendLink = WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(this.getClass()).resendVerificationMail()).withRel("resend_verification_mail");
         response.add(loginLink, resendLink);
         return ResponseEntity.of(Optional.of(response));
@@ -36,8 +40,13 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login() {
-        return ResponseEntity.ok().build(); //ToDo: refactor
+    public ResponseEntity<?> login(@RequestBody @Valid LoginDTO loginDTO) {
+        String authToken = authService.login(loginDTO);
+        //build response
+        Map<String, Object> data = new HashMap<>();
+        data.put("authToken", authToken);
+        Response response = new Response(true, "Login successful", data);
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/email_verification/repeat")

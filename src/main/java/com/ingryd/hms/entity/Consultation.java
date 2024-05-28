@@ -16,8 +16,8 @@ public class Consultation {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "hospital_client_id", nullable = false)
-    private HospitalPatient hospitalClient;
+    @JoinColumn(name = "hospital_patient_id", nullable = false)
+    private HospitalPatient hospitalPatient;
 
     @ManyToOne
     @JoinColumn(name = "staff_id", nullable = false)
