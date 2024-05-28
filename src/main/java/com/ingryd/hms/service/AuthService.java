@@ -16,7 +16,7 @@ import org.springframework.stereotype.Service;
 public class AuthService {
     private final UserRepository userRepository;
     private final TokenService tokenService;
-    //private final MailService mailService;
+    private final MailService mailService;
 
     @Transactional
     public void clientSignup(UserDTO userDTO) throws Exception {
@@ -27,7 +27,7 @@ public class AuthService {
         int token = tokenService.generateToken();
         Token savedToken = tokenService.saveToken(token, user); // Save token
         //send verification mail
-        //mailService.sendEmailVerificationMail(user, savedToken.getValue());
+        mailService.sendEmailVerificationMail(user, savedToken.getValue());
     }
 
 }

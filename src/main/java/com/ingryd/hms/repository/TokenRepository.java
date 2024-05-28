@@ -5,4 +5,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface TokenRepository extends JpaRepository<Token, Integer> {
     boolean findByValue(int value);
+    Token findTokenByValue(int value);
 }

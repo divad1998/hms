@@ -1,8 +1,10 @@
 package com.ingryd.hms.controller;
 
+import com.ingryd.hms.dto.PasswordDTO;
 import com.ingryd.hms.dto.Response;
 import com.ingryd.hms.dto.UserDTO;
 import com.ingryd.hms.service.AuthService;
+import com.ingryd.hms.service.PasswordService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Link;
@@ -18,6 +20,9 @@ import java.util.Optional;
 public class AuthController {
     @Autowired
     private AuthService authService;
+
+    @Autowired
+    private PasswordService passwordService;
 
     @PostMapping("/patients/signup")
     @ResponseStatus(code = HttpStatus.CREATED)
@@ -43,5 +48,17 @@ public class AuthController {
     @PostMapping("/email_verification/repeat")
     public ResponseEntity<?> resendVerificationMail() {
         return ResponseEntity.ok().build(); //ToDo: refactor
+    }
+
+    @PostMapping("/forgotten-password")
+    public ResponseEntity<String> forgottenPassword(@RequestBody @Valid String email){
+        passwordService.forgottenPassword(email);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<?> resetPassword(PasswordDTO dto){
+        passwordService.resetPassword(dto);
+        return ResponseEntity.ok().build();
     }
 }

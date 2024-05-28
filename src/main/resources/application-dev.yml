@@ -10,7 +10,7 @@ spring:
   datasource:
     url: jdbc:mysql://localhost:3306/hms-dev
     username: root
-    password:
+    password: ihvadream
   mail:
     port: 587
     username: hospitalmanagementsystem1.0@gmail.com
