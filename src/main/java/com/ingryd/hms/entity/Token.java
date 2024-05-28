@@ -17,7 +17,7 @@ public class Token {
     private int id;
 
     @Column(unique = true, length = 4)
-    @Length(max = 4, message = "Max length of value is 4 characters.")
+//    @Length(max = 4, message = "Max length of value is 4 characters.")
     private int value;
 
     @ManyToOne(optional = false)
