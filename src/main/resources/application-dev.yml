@@ -9,8 +9,8 @@ spring:
       ddl-auto: update
   datasource:
     url: jdbc:mysql://localhost:3306/hms_dev
-    username: david
-    password: david
+    username: root
+    password: Mariamtinu96
 
 hms:
   jwt:
