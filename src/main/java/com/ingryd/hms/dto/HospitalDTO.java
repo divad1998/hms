@@ -15,16 +15,11 @@ public class HospitalDTO {
 
     @NotBlank(message = "First name can't be blank.")
     @NotNull(message = "First name can't be null.")
-    private String firstName;
+    private String registrant_firstName;
 
     @NotBlank(message = "Last name can't be blank.")
     @NotNull(message = "Last name can't be null.")
-    private String lastName;
-
-    @NotBlank(message = "Password can't be blank.")
-    @NotNull(message = "Password can't be null.")
-    @Pattern(regexp = "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[~@$#!%^*?&()_+={}|:;])[A-Za-z\\d~@$#!%^*?&()_+={}|:;]{8,}$")
-    private String password;
+    private String registrant_lastName;
 
     @NotBlank(message = "Hospital name can't be blank.")
     @NotNull(message = "Hospital name can't be null.")
@@ -64,16 +59,20 @@ public class HospitalDTO {
     @Length(min = 11, max = 11, message = "Max length of phone number is 11 digits.")
     private String contactNumber;
 
+    @Length(max = 40, message = "Max length of website is 40 characters.")
+    private String website;
+
     @NotBlank(message = "Email can't be blank.")
     @NotNull(message = "Email can't be null.")
     @Length(max = 50, message = "Max length of email is 50 characters.")
     @Email(message = "Invalid email format.")
     private String email;
 
-    @Length(max = 40, message = "Max length of website is 40 characters.")
-    private String website;
+    @NotBlank(message = "Password can't be blank.")
+    @NotNull(message = "Password can't be null.")
+    @Pattern(regexp = "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[~@$#!%^*?&()_+={}|:;])[A-Za-z\\d~@$#!%^*?&()_+={}|:;]{8,}$",
+            message = "Password must contain at least one capitalized alphabet, small alphabet, one digit, and one special character.")
+    private String password;
 
     private LocalDateTime createdAt;
-
-    private LocalDateTime updatedAt;
 }

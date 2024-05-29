@@ -29,7 +29,6 @@ public class Appointment {
     private HospitalPatient hospitalPatient;
 
     @Column(length = 50)
-    @NotBlank(message = "Consultant's specialty can't be blank.")
     @Length(max = 50, message = "Consultant's specialty can't exceed 50 characters.")
     private String consultantSpecialty;
 

@@ -37,7 +37,8 @@ public class UserDTO {
     @NotBlank(message = "Password can't be blank.")
     @NotNull(message = "Password can't be null.")
     @Length(min = 8)
-    @Pattern(regexp = "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[~@$#!%^*?&()_+={}|:;])[A-Za-z\\d~@$#!%^*?&()_+={}|:;]{8,}$")
+    @Pattern(regexp = "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[~@$#!%^*?&()_+={}|:;])[A-Za-z\\d~@$#!%^*?&()_+={}|:;]{8,}$",
+            message = "Password must contain at least one capitalized alphabet, small alphabet, one digit, and one special character.")
     private String password;
 
     @NotBlank(message = "Contact address can't be blank.")
