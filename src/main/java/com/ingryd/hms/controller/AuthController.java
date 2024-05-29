@@ -1,26 +1,48 @@
 package com.ingryd.hms.controller;
 
+import com.ingryd.hms.dto.HospitalDTO;
+import com.ingryd.hms.entity.Hospital;
+import com.ingryd.hms.service.AuthService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 import com.ingryd.hms.dto.LoginDTO;
 import com.ingryd.hms.dto.Response;
 import com.ingryd.hms.dto.UserDTO;
-import com.ingryd.hms.entity.User;
-import com.ingryd.hms.service.AuthService;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+@RequiredArgsConstructor
 @RestController
+@RequestMapping("/hospitals")
 public class AuthController {
-    @Autowired
-    private AuthService authService;
+    private final AuthService authService;
+
+    @GetMapping("/allHospital")
+    public ResponseEntity<Iterable<Hospital>> getAllHospital(){
+        return authService.getAllHospital();
+    }
+
+    @GetMapping("/hospital/{id}")
+    public ResponseEntity<Hospital> getHospitalById(@PathVariable int id){
+        return authService.getHospitalById(id);
+    }
+
+    @GetMapping("/hospital")
+    public ResponseEntity<Hospital> getByHospitalName(@RequestParam String hospitalName){
+        return authService.getByHospitalName(hospitalName);
+    }
+
+    @PostMapping("/register")
+    public ResponseEntity<Response> postHospital(@RequestBody HospitalDTO hospitalDTO) {
+        return authService.postHospital(hospitalDTO);
+    }
 
     @PostMapping("/patients/signup")
     @ResponseStatus(code = HttpStatus.CREATED)
@@ -36,7 +58,7 @@ public class AuthController {
 
     @GetMapping("/verify_email")
     public ResponseEntity<?> verifyEmail() {
-        return ResponseEntity.ok().build(); //ToDo: refactor
+        return ResponseEntity.ok().build();
     }
 
     @PostMapping("/login")
@@ -51,6 +73,6 @@ public class AuthController {
 
     @PostMapping("/email_verification/repeat")
     public ResponseEntity<?> resendVerificationMail() {
-        return ResponseEntity.ok().build(); //ToDo: refactor
+        return ResponseEntity.ok().build();
     }
 }
