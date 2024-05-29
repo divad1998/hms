@@ -18,8 +18,8 @@ import java.util.function.Function;
 @Service
 public class JwtService {
 
-    @Value("${hms.jwt.secret_key}")
-    private static String SECRET_KEY;
+    //@Value("${hms.jwt.secret_key}")
+    private final static String SECRET_KEY = "5367566B59703373357638792F423F4528482B4D6251655468576D5A71347437";
 
     private Key getSigningKey(){
         byte[] keyBytes = Decoders.BASE64.decode(SECRET_KEY);
@@ -36,7 +36,7 @@ public class JwtService {
                 .setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 5))
-                .setIssuer("Banking App 1.0")
+                .setIssuer("Ingryd's Hospital Management System")
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256).compact();
     }
 

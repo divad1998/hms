@@ -7,6 +7,7 @@ import org.hibernate.validator.constraints.Length;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.function.Predicate;
 
 @Entity(name = "appointments")
 public class Appointment {
@@ -25,7 +26,7 @@ public class Appointment {
 
     @ManyToOne
     @JoinColumn(name = "hospital_client_id", nullable = false)
-    private HospitalClient hospitalClient;
+    private HospitalPatient hospitalPatient;
 
     @Column(length = 50)
     @NotBlank(message = "Consultant's specialty can't be blank.")
