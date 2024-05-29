@@ -58,7 +58,7 @@ public class AuthController {
 
     @GetMapping("/verify_email")
     public ResponseEntity<?> verifyEmail() {
-        return ResponseEntity.ok().build(); //ToDo: refactor
+        return ResponseEntity.ok().build();
     }
 
     @PostMapping("/login")
@@ -73,6 +73,6 @@ public class AuthController {
 
     @PostMapping("/email_verification/repeat")
     public ResponseEntity<?> resendVerificationMail() {
-        return ResponseEntity.ok().build(); //ToDo: refactor
+        return ResponseEntity.ok().build();
     }
 }

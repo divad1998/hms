@@ -57,8 +57,8 @@ public class Hospital {
     private String hfrn;
 
     @Column(nullable = false, unique = true)
-    @Size(min = 11, max = 11, message = "Max length of phone number is 11 digits.")
-    private int contactNumber;
+    @Length(min = 11, max = 11, message = "Max length of phone number is 11 digits.")
+    private String contactNumber;
 
     @Column(nullable = false, length = 50, unique = true)
     @NotBlank(message = "Email can't be blank.")

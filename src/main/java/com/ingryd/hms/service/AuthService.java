@@ -59,6 +59,8 @@ public class AuthService {
         adminUser.setPassword(hospitalDTO.getPassword());
         adminUser.setEmail(hospitalDTO.getEmail());
         User savedUser = userRepository.save(adminUser);
+        int token = tokenService.generateToken();
+        Token savedToken = tokenService.saveToken(token, adminUser);
 
         //save hospital
         Hospital hospital = new Hospital();
