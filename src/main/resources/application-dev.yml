@@ -12,15 +12,21 @@ spring:
     username: root
     password:
   mail:
-    port: 587
+    host: smtp.gmail.com
+    port: 465
     username: hospitalmanagementsystem1.0@gmail.com
     password: facyjafjwivoqpki
+    protocol: smtp
     properties:
       mail:
         smtp:
           auth: true
           starttls:
             enable: true
+            required: true
+          ssl:
+            enable: true
+            required: true
         transport:
           protocol: smtp
 
