@@ -40,9 +40,4 @@ public class Configuration {
         authenticationProvider.setUserDetailsService(userDetailsService());
         return authenticationProvider;
     }
-
-    @Bean
-    public JavaMailSender javaMailSender() {
-        return new JavaMailSenderImpl();
-    }
 }

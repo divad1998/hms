@@ -51,7 +51,7 @@ public class AuthController {
         //build response
         Map<String, Object> data = new HashMap<>();
         data.put("authToken", authToken);
-        Response response = new Response(true, "Login successful", data);
+        Response response = new Response(true, "Login successful.", data);
         return ResponseEntity.ok(response);
     }
 

@@ -33,9 +33,7 @@ public class AuthService {
     private final TokenService tokenService;
     private final AuthenticationManager authManager;
     private final JwtService jwtService;
-    //private final MailService mailService;
-
-
+    private final MailService mailService;
 
     @Transactional
     public ResponseEntity<Response> postHospital(HospitalDTO hospitalDTO){
@@ -86,7 +84,7 @@ public class AuthService {
         int token = tokenService.generateToken();
         Token savedToken = tokenService.saveToken(token, user); // Save token
         //send verification mail
-        //mailService.sendEmailVerificationMail(user, savedToken.getValue());
+        mailService.sendEmailVerificationMail(user, savedToken.getValue());
     }
 
     public String login(LoginDTO loginDTO) {
