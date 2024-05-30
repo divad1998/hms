@@ -1,5 +1,6 @@
 package com.ingryd.hms.security;
 
+import com.ingryd.hms.enums.Role;
 import com.ingryd.hms.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -34,9 +35,12 @@ public class SecurityConfiguration {
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(requestRegistry -> requestRegistry
-                        .requestMatchers(HttpMethod.POST, "/patients/signup").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/patients/signup/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/hospitals/signup").permitAll()
+                        .requestMatchers(HttpMethod.PUT, "/user/**").permitAll()
+                        .requestMatchers("/admin")
+                        .hasAnyAuthority(Role.ADMIN.name())
                         .anyRequest().authenticated())
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
