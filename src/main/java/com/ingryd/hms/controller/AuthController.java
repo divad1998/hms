@@ -1,10 +1,13 @@
 package com.ingryd.hms.controller;
 
+import com.ingryd.hms.dto.ForgottenPasswordDto;
 import com.ingryd.hms.dto.PasswordDTO;
 import com.ingryd.hms.dto.Response;
 import com.ingryd.hms.dto.UserDTO;
 import com.ingryd.hms.service.AuthService;
+import com.ingryd.hms.service.MailService;
 import com.ingryd.hms.service.PasswordService;
+import com.ingryd.hms.service.TokenService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Link;
@@ -16,13 +19,13 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("api/v1")
 public class AuthController {
     @Autowired
     private AuthService authService;
 
     @Autowired
     private PasswordService passwordService;
+
 
     @PostMapping("/patients/signup")
     @ResponseStatus(code = HttpStatus.CREATED)
@@ -52,8 +55,8 @@ public class AuthController {
     }
 
     @PostMapping("/forgotten-password")
-    public ResponseEntity<String> forgottenPassword(@RequestBody @Valid String email){
-        passwordService.forgottenPassword(email);
+    public ResponseEntity<String> forgottenPassword(@RequestBody @Valid ForgottenPasswordDto dto){
+        passwordService.forgottenPassword(dto.getEmail());
         return ResponseEntity.ok().build();
     }
 

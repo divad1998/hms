@@ -12,24 +12,27 @@ spring:
     username: root
     password: ihvadream
   mail:
-    port: 587
-    username: hospitalmanagementsystem1.0@gmail.com
-    password: facyjafjwivoqpki
+    host: smtp.gmail.com
+    port: 465
+    username: divadchigozie@gmail.com
+    password: jwgwvfqtoetohvol
+    protocol: smtp
     properties:
       mail:
         smtp:
           auth: true
           starttls:
             enable: true
-        transport:
-          protocol: smtp
-
+            required: true
+          ssl:
+            enable: true
+            required: true
 hms:
   jwt:
     secret_key: 5367566B59703373357638792F423F4528482B4D6251655468576D5A71347437
 
-#server:
-#  servlet:
-#    context-path: /api/v1
+server:
+  servlet:
+    context-path: /api/v1
 
 

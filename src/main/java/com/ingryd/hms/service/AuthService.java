@@ -27,9 +27,11 @@ public class AuthService {
         user.setRole(Role.PATIENT);
         user = userRepository.save(user);
         int token = tokenService.generateToken();
-        Token savedToken = tokenService.saveToken(token, user); // Save token
+        Token savedToken = tokenService.saveToken(token, user);
+        System.out.println(token);// Save token
         //send verification mail
         mailService.sendEmailVerificationMail(user, savedToken.getValue());
+
     }
 
     public void verifyEmail(int value){

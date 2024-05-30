@@ -41,8 +41,8 @@ public class Configuration {
         return authenticationProvider;
     }
 
-    @Bean
+    /*@Bean
     public JavaMailSender javaMailSender(){
         return new JavaMailSenderImpl();
-    }
+    }*/
 }
