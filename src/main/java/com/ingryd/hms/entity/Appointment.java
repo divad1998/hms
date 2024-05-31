@@ -2,6 +2,7 @@ package com.ingryd.hms.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import lombok.Data;
 import org.hibernate.validator.constraints.Length;
 
 import java.time.LocalDate;
@@ -9,6 +10,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.function.Predicate;
 
+@Data
 @Entity(name = "appointments")
 public class Appointment {
     @Id

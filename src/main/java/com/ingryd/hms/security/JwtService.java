@@ -10,9 +10,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.security.Key;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 
 @Service
@@ -69,5 +67,9 @@ public class JwtService {
         String username = extractClaims(token, Claims::getSubject);
         return username.equalsIgnoreCase(userDetails.getUsername()) && !isTokenExpired(token);
 
+    }
+    private Set<String> tokenBlackList = new HashSet<>();
+    public void invalidateToken(String token) {
+        tokenBlackList.add(token);
     }
 }

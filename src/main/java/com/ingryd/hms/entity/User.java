@@ -2,9 +2,7 @@ package com.ingryd.hms.entity;
 
 import com.ingryd.hms.enums.Role;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.*;
 import lombok.Data;
-import org.hibernate.validator.constraints.Length;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -52,6 +50,10 @@ public class User implements UserDetails {
     private LocalDateTime createdAt;
 
     private LocalDateTime updatedAt;
+
+    private boolean enabled;
+
+
 
     public User() {}
 
