@@ -53,6 +53,10 @@ public class User implements UserDetails {
 
     private LocalDateTime updatedAt;
 
+    private boolean enabled;
+
+
+
     public User() {}
 
     @PrePersist

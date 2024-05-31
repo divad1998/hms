@@ -40,6 +40,7 @@ public class SecurityConfiguration {
                         .requestMatchers(HttpMethod.POST, "/hospitals/signup").permitAll()
                         .requestMatchers(HttpMethod.PUT, "/users/**").permitAll()
                         .requestMatchers("/admin").hasAnyAuthority(Role.ADMIN.name())
+                        .requestMatchers(HttpMethod.POST, "/forgotten-password").permitAll()
                         .anyRequest().authenticated())
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 

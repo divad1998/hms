@@ -9,6 +9,7 @@ import com.ingryd.hms.entity.Token;
 import com.ingryd.hms.entity.User;
 import com.ingryd.hms.enums.Role;
 import com.ingryd.hms.mapper.Mapper;
+import com.ingryd.hms.repository.TokenRepository;
 import com.ingryd.hms.repository.HospitalRepository;
 import com.ingryd.hms.repository.UserRepository;
 import com.ingryd.hms.security.JwtService;
@@ -31,6 +32,7 @@ public class AuthService {
 
     private final UserRepository userRepository;
     private final TokenService tokenService;
+    private final TokenRepository tokenRepository;
     private final AuthenticationManager authManager;
     private final JwtService jwtService;
     private final MailService mailService;
@@ -73,8 +75,6 @@ public class AuthService {
         return ResponseEntity.status(201).body(response);
     }
     
-
-
     @Transactional
     public void clientSignup(UserDTO userDTO) throws Exception {
         User user = Mapper.mapper.mapToUser(userDTO);
@@ -82,9 +82,16 @@ public class AuthService {
         user.setRole(Role.PATIENT);
         user = userRepository.save(user);
         int token = tokenService.generateToken();
-        Token savedToken = tokenService.saveToken(token, user); // Save token
+        Token savedToken = tokenService.saveToken(token, user);
+        System.out.println(token);// Save token
         //send verification mail
         mailService.sendEmailVerificationMail(user, savedToken.getValue());
+    }
+
+    public void verifyEmail(int value){
+        Token token = tokenRepository.findByValue(value).get();
+        User user = token.getUser();
+        user.setEnabled(true);
     }
 
     public String login(LoginDTO loginDTO) {
