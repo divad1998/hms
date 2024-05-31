@@ -12,7 +12,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
@@ -24,7 +23,6 @@ public class HospitalService {
     private final PatientHospitalRepository patientHospitalRepository;
     private final UserRepository userRepository;
 
-
     public ResponseEntity<Response> getAllHospitals(){
         Map<String, Object> data = new HashMap<>();
         data.put("hospitals", hospitalRepository.findAll());
@@ -34,7 +32,7 @@ public class HospitalService {
 
     public ResponseEntity<Response> getHospitalById(int id){
         Map<String, Object> data = new HashMap<>();
-        data.put("hospitals", hospitalRepository.findHospitalById(id));
+        data.put("hospital", hospitalRepository.findHospitalById(id));
         Response response = new Response(true, "Success.", data);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
@@ -42,6 +40,7 @@ public class HospitalService {
     public ResponseEntity<Hospital> getByHospitalName(String hospitalName){
         return new ResponseEntity<>(hospitalRepository.findHospitalByHospitalName(hospitalName), HttpStatus.OK);
     }
+
     @Transactional
     public void registerPatientWithHospital(Long patientId, Long hospitalId){
         User patient = userRepository.findById(patientId).orElseThrow(()-> new IllegalArgumentException("Invalid patient id"));

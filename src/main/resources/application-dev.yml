@@ -9,16 +9,16 @@ spring:
     hibernate:
       naming:
         physical-strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
-      ddl-auto: update
+      ddl-auto: create-drop
   datasource:
-    url: jdbc:mysql://localhost:3306/hms_db
+    url: jdbc:mysql://localhost:3306/hms-dev
     username: root
-    password: zikans@19
+    password: ihvadream
   mail:
     host: smtp.gmail.com
-    port:
-    username:
-    password:
+    port: 465
+    username: divadchigozie@gmail.com
+    password: jwgwvfqtoetohvol
     protocol: smtp
     properties:
       mail:
@@ -30,10 +30,6 @@ spring:
           ssl:
             enable: true
             required: true
-        transport:
-          protocol: smtp
-
-
 
 hms:
   jwt:

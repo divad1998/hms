@@ -71,7 +71,7 @@ public class Hospital {
     @Length(max = 40, message = "Max length of website is 40 characters.")
     private String website;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "registered_by", nullable = false)
     private User registeredBy;
 

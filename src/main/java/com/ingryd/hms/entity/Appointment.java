@@ -2,6 +2,7 @@ package com.ingryd.hms.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import lombok.Data;
 import org.hibernate.validator.constraints.Length;
 
 import java.time.LocalDate;
@@ -9,6 +10,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.function.Predicate;
 
+@Data
 @Entity(name = "appointments")
 public class Appointment {
     @Id
@@ -29,7 +31,6 @@ public class Appointment {
     private HospitalPatient hospitalPatient;
 
     @Column(length = 50)
-    @NotBlank(message = "Consultant's specialty can't be blank.")
     @Length(max = 50, message = "Consultant's specialty can't exceed 50 characters.")
     private String consultantSpecialty;
 
