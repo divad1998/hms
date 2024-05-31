@@ -75,8 +75,6 @@ public class AuthService {
         return ResponseEntity.status(201).body(response);
     }
 
-
-
     @Transactional
     public void clientSignup(UserDTO userDTO) throws Exception {
         User user = Mapper.mapper.mapToUser(userDTO);

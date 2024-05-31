@@ -4,8 +4,12 @@ import com.ingryd.hms.dto.Response;
 import com.ingryd.hms.entity.Hospital;
 import com.ingryd.hms.service.HospitalService;
 import lombok.AllArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Optional;
 
 @AllArgsConstructor
 @RestController
@@ -26,5 +30,13 @@ public class HospitalController {
     @GetMapping("/filter")
     public ResponseEntity<Hospital> getByHospitalName(@RequestParam String hospitalName){
         return hospitalService.getByHospitalName(hospitalName);
+    }
+
+    @PostMapping("/{hospitalId}/registerPatient")
+    @ResponseStatus(HttpStatus.CREATED)
+    public ResponseEntity<?> registerPatientWithHospital (@PathVariable Long hospitalId, @RequestParam Long patientId){
+        hospitalService.registerPatientWithHospital(patientId, hospitalId);
+        Response response = new Response(true, "Patient registered with hospital successfully", null);
+        return ResponseEntity.ok(response);
     }
 }
