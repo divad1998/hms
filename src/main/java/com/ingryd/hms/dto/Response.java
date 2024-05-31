@@ -6,12 +6,14 @@ import lombok.NoArgsConstructor;
 import org.springframework.hateoas.RepresentationModel;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Data
 @AllArgsConstructor
 public class Response extends RepresentationModel<Response> {
     private boolean status;
     private String message;
-    private List<?> date = new ArrayList<>();
+    private Map<String, Object> data = new HashMap<>();
 }

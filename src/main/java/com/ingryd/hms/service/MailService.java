@@ -5,7 +5,6 @@ import jakarta.mail.internet.MimeMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
@@ -17,7 +16,6 @@ import java.nio.charset.Charset;
 @Service
 @Slf4j
 public class MailService {
-
     private final JavaMailSender mailSender;
 
     public MailService(JavaMailSender mailSender) {
@@ -32,7 +30,7 @@ public class MailService {
             messageHelper.setTo(user.getEmail());
             messageHelper.setFrom("hospitalmanagementsystem1.0@gmail.com");
             messageHelper.setSubject("Verify your email");
-            messageHelper.setText("Dear " + user.getFirstName() + "," + " kindly hit: " + "http://localhost:8080/api/v1/verify-email/" + token + " to verify your email.");
+            messageHelper.setText("Dear " + user.getFirstName() + "," + " kindly hit: " + "http://localhost:8080/api/v1/verify_email/" + token + " to verify your email.");
             mailSender.send(messageHelper.getMimeMessage());
         } catch (Exception e) {
             Logger logger = LoggerFactory.getLogger(this.getClass().getName());
@@ -55,5 +53,4 @@ public class MailService {
             logger.error(e.getMessage());
         }
     }
-
 }

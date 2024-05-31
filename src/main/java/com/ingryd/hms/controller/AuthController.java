@@ -1,5 +1,6 @@
 package com.ingryd.hms.controller;
 
+
 import com.ingryd.hms.dto.ForgottenPasswordDto;
 import com.ingryd.hms.dto.PasswordDTO;
 import com.ingryd.hms.dto.Response;
@@ -8,20 +9,33 @@ import com.ingryd.hms.service.AuthService;
 import com.ingryd.hms.service.MailService;
 import com.ingryd.hms.service.PasswordService;
 import com.ingryd.hms.service.TokenService;
+
+import com.ingryd.hms.dto.HospitalDTO;
+import com.ingryd.hms.entity.Hospital;
+import com.ingryd.hms.service.AuthService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import com.ingryd.hms.dto.LoginDTO;
+
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
+@RequiredArgsConstructor
 @RestController
 public class AuthController {
-    @Autowired
-    private AuthService authService;
+    private final AuthService authService;
+
+    @PostMapping("/hospitals/signup")
+    public ResponseEntity<Response> postHospital(@RequestBody @Valid HospitalDTO hospitalDTO) {
+        return authService.postHospital(hospitalDTO);
+    }
 
     @Autowired
     private PasswordService passwordService;
@@ -31,8 +45,9 @@ public class AuthController {
     @ResponseStatus(code = HttpStatus.CREATED)
     public ResponseEntity<?> clientSignup(@RequestBody @Valid UserDTO userDTO) throws Exception {
         authService.clientSignup(userDTO);
+        //build response on success
         Response response = new Response(true, "Signed up. Check mailbox to verify email quickly.", null);
-        Link loginLink = WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(this.getClass()).login()).withRel("login");
+        Link loginLink = WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(this.getClass()).login(null)).withRel("login");
         Link resendLink = WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(this.getClass()).resendVerificationMail()).withRel("resend_verification_mail");
         response.add(loginLink, resendLink);
         return ResponseEntity.of(Optional.of(response));
@@ -41,17 +56,22 @@ public class AuthController {
     @GetMapping("/verify_email")
     public ResponseEntity<?> verifyEmail(int value) {
         authService.verifyEmail(value);
-        return ResponseEntity.ok().build(); //ToDo: refactor
+        return ResponseEntity.ok().build();
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login() {
-        return ResponseEntity.ok().build(); //ToDo: refactor
+    public ResponseEntity<?> login(@RequestBody @Valid LoginDTO loginDTO) {
+        String authToken = authService.login(loginDTO);
+        //build response
+        Map<String, Object> data = new HashMap<>();
+        data.put("authToken", authToken);
+        Response response = new Response(true, "Login successful.", data);
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/email_verification/repeat")
     public ResponseEntity<?> resendVerificationMail() {
-        return ResponseEntity.ok().build(); //ToDo: refactor
+        return ResponseEntity.ok().build();
     }
 
     @PostMapping("/forgotten-password")

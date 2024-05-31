@@ -8,7 +8,7 @@ import org.hibernate.validator.constraints.Length;
 
 import java.time.LocalDateTime;
 
-@Entity(name = "hospital_clients")
+@Entity(name = "hospital_patients")
 @Data
 public class HospitalPatient {
     @Id

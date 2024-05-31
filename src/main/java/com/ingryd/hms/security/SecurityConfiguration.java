@@ -1,5 +1,6 @@
 package com.ingryd.hms.security;
 
+import com.ingryd.hms.enums.Role;
 import com.ingryd.hms.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -31,14 +32,16 @@ public class SecurityConfiguration {
 
         httpSecurity
                 .csrf(AbstractHttpConfigurer::disable)
-                .httpBasic(AbstractHttpConfigurer::disable)
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .httpBasic(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(requestRegistry -> requestRegistry
-                                .requestMatchers(HttpMethod.POST, "/patients/signup").permitAll()
-                                .requestMatchers(HttpMethod.POST, "/login").permitAll()
-                                .requestMatchers(HttpMethod.POST, "/forgotten-password").permitAll()
-                                .anyRequest().authenticated()
-                )
+                        .requestMatchers(HttpMethod.POST, "/patients/signup/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/login").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/hospitals/signup").permitAll()
+                        .requestMatchers(HttpMethod.PUT, "/users/**").permitAll()
+                        .requestMatchers("/admin").hasAnyAuthority(Role.ADMIN.name())
+                        .requestMatchers(HttpMethod.POST, "/forgotten-password").permitAll()
+                        .anyRequest().authenticated())
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return httpSecurity.build();
