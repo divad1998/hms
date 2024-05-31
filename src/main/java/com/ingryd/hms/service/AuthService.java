@@ -35,32 +35,20 @@ public class AuthService {
     private final JwtService jwtService;
     //private final MailService mailService;
 
-    public ResponseEntity<Iterable<Hospital>> getAllHospital(){
-        return new ResponseEntity<>(hospitalRepository.findAll(), HttpStatus.OK);
-    }
 
-    public ResponseEntity<Hospital> getHospitalById(int id){
-        return new ResponseEntity<>(hospitalRepository.findHospitalById(id), HttpStatus.OK);
-    }
-
-    public ResponseEntity<Hospital> getByHospitalName(String hospitalName){
-        return new ResponseEntity<>(hospitalRepository.findHospitalByHospitalName(hospitalName), HttpStatus.OK);
-    }
 
     @Transactional
     public ResponseEntity<Response> postHospital(HospitalDTO hospitalDTO){
         //save user
         User adminUser = new User();
-        adminUser.setFirstName(hospitalDTO.getFirstName());
-        adminUser.setLastName(hospitalDTO.getLastName());
+        adminUser.setFirstName(hospitalDTO.getRegistrant_firstName());
+        adminUser.setLastName(hospitalDTO.getRegistrant_lastName());
         adminUser.setPhoneNumber(hospitalDTO.getContactNumber());
         adminUser.setContactAddress(hospitalDTO.getAddress());
         adminUser.setRole(Role.ADMIN);
         adminUser.setPassword(hospitalDTO.getPassword());
         adminUser.setEmail(hospitalDTO.getEmail());
         User savedUser = userRepository.save(adminUser);
-        int token = tokenService.generateToken();
-        Token savedToken = tokenService.saveToken(token, adminUser);
 
         //save hospital
         Hospital hospital = new Hospital();
@@ -75,14 +63,18 @@ public class AuthService {
         hospital.setEmail(hospitalDTO.getEmail());
         hospital.setWebsite(hospitalDTO.getWebsite());
         hospital.setRegisteredBy(savedUser);
-        hospital.setCreatedAt(hospitalDTO.getCreatedAt());
-        hospital.setUpdatedAt(hospitalDTO.getUpdatedAt());
-        
-        Hospital savedHospital = hospitalRepository.save(hospital);
-        Response response = new Response(true, "Signed up. Check mailbox to verify email quickly.", null); ResponseEntity.status(201).body(response);
-        return ResponseEntity.ok(response);
+        hospitalRepository.save(hospital);
+
+        //generate token and send verification mail
+        int token = tokenService.generateToken();
+        Token savedToken = tokenService.saveToken(token, adminUser);
+        //ToDo: send mail below
+
+        //response
+        Response response = new Response(true, "Signed up. Check mailbox to verify email quickly.", null);
+        return ResponseEntity.status(201).body(response);
     }
-    
+
 
 
     @Transactional
@@ -111,5 +103,9 @@ public class AuthService {
         } catch (AuthenticationException e) {
             throw e;
         }
+    }
+
+    public void logout(String authToken){
+        jwtService.invalidateToken(authToken);
     }
 }

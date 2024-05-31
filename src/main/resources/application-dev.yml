@@ -1,4 +1,7 @@
 spring:
+  jackson:
+    serialization:
+      FAIL_ON_EMPTY_BEANS: false
   jpa:
     properties:
       hibernate:
@@ -8,21 +11,29 @@ spring:
         physical-strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
       ddl-auto: update
   datasource:
-    url: jdbc:mysql://localhost:3306/hms_dev
+    url: jdbc:mysql://localhost:3306/hms_db
     username: root
-    password: Mariamtinu96
+    password: zikans@19
   mail:
-    port: 587
-    username: hospitalmanagementsystem1.0@gmail.com
-    password: facyjafjwivoqpki
+    host: smtp.gmail.com
+    port:
+    username:
+    password:
+    protocol: smtp
     properties:
       mail:
         smtp:
           auth: true
           starttls:
             enable: true
+            required: true
+          ssl:
+            enable: true
+            required: true
         transport:
           protocol: smtp
+
+
 
 hms:
   jwt:

@@ -20,27 +20,11 @@ import java.util.Optional;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/hospitals")
 public class AuthController {
     private final AuthService authService;
 
-    @GetMapping("/allHospital")
-    public ResponseEntity<Iterable<Hospital>> getAllHospital(){
-        return authService.getAllHospital();
-    }
-
-    @GetMapping("/hospital/{id}")
-    public ResponseEntity<Hospital> getHospitalById(@PathVariable int id){
-        return authService.getHospitalById(id);
-    }
-
-    @GetMapping("/hospital")
-    public ResponseEntity<Hospital> getByHospitalName(@RequestParam String hospitalName){
-        return authService.getByHospitalName(hospitalName);
-    }
-
-    @PostMapping("/register")
-    public ResponseEntity<Response> postHospital(@RequestBody HospitalDTO hospitalDTO) {
+    @PostMapping("/hospitals/signup")
+    public ResponseEntity<Response> postHospital(@RequestBody @Valid HospitalDTO hospitalDTO) {
         return authService.postHospital(hospitalDTO);
     }
 
@@ -74,5 +58,13 @@ public class AuthController {
     @PostMapping("/email_verification/repeat")
     public ResponseEntity<?> resendVerificationMail() {
         return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(@RequestHeader ("Authorization") String authToken){
+        authService.logout(authToken);
+        Response response = new Response (true, "logout successful", null);
+        return ResponseEntity.ok(response);
+
     }
 }

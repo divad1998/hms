@@ -10,9 +10,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.security.Key;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 
 @Service
@@ -35,7 +33,7 @@ public class JwtService {
                 .addClaims(mapOfClaims)
                 .setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 5))
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60))
                 .setIssuer("Ingryd's Hospital Management System")
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256).compact();
     }
@@ -69,5 +67,9 @@ public class JwtService {
         String username = extractClaims(token, Claims::getSubject);
         return username.equalsIgnoreCase(userDetails.getUsername()) && !isTokenExpired(token);
 
+    }
+    private Set<String> tokenBlackList = new HashSet<>();
+    public void invalidateToken(String token) {
+        tokenBlackList.add(token);
     }
 }
