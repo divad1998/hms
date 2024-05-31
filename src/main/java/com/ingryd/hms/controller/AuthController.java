@@ -27,19 +27,17 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-@RequiredArgsConstructor
 @RestController
 public class AuthController {
+    @Autowired
     private final AuthService authService;
+    @Autowired
+    private PasswordService passwordService;
 
     @PostMapping("/hospitals/signup")
     public ResponseEntity<Response> postHospital(@RequestBody @Valid HospitalDTO hospitalDTO) {
         return authService.postHospital(hospitalDTO);
     }
-
-    @Autowired
-    private PasswordService passwordService;
-
 
     @PostMapping("/patients/signup")
     @ResponseStatus(code = HttpStatus.CREATED)
@@ -74,6 +72,13 @@ public class AuthController {
         return ResponseEntity.ok().build();
     }
 
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(@RequestHeader ("Authorization") String authToken){
+        authService.logout(authToken);
+        Response response = new Response (true, "logout successful", null);
+        return ResponseEntity.ok(response);
+    }
+  
     @PostMapping("/forgotten-password")
     public ResponseEntity<String> forgottenPassword(@RequestBody @Valid ForgottenPasswordDto dto){
         passwordService.forgottenPassword(dto.getEmail());

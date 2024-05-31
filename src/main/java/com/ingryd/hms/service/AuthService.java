@@ -109,4 +109,8 @@ public class AuthService {
             throw e;
         }
     }
+
+    public void logout(String authToken){
+        jwtService.invalidateToken(authToken);
+    }
 }
