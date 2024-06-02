@@ -38,7 +38,9 @@ public class Appointment {
     @JoinColumn(name = "desired_staff_id")
     private Staff desiredConsultant;
 
-    private boolean issued;
+    private boolean confirmed;
+    private boolean acceptedByPatient;
+    private boolean cancelled;
 
     @ManyToOne
     @JoinColumn(name = "hospital_id", nullable = false)

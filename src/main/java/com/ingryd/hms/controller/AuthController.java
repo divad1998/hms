@@ -2,10 +2,17 @@ package com.ingryd.hms.controller;
 import com.ingryd.hms.dto.*;
 import com.ingryd.hms.service.AuthService;
 import com.ingryd.hms.service.PasswordService;
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import com.ingryd.hms.dto.PasswordDTO;
+import com.ingryd.hms.dto.Response;
+import com.ingryd.hms.dto.UserDTO;
+
+import com.ingryd.hms.dto.HospitalDTO;
+
 import jakarta.validation.Valid;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
@@ -15,19 +22,18 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-@RequiredArgsConstructor
 @RestController
+@AllArgsConstructor
 public class AuthController {
+    @Autowired
     private final AuthService authService;
+    @Autowired
+    private PasswordService passwordService;
 
     @PostMapping("/hospitals/signup")
     public ResponseEntity<Response> postHospital(@RequestBody @Valid HospitalDTO hospitalDTO) {
         return authService.postHospital(hospitalDTO);
     }
-
-    @Autowired
-    private PasswordService passwordService;
-
 
     @PostMapping("/patients/signup")
     @ResponseStatus(code = HttpStatus.CREATED)
@@ -62,6 +68,13 @@ public class AuthController {
         return ResponseEntity.ok().build();
     }
 
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(@RequestHeader ("Authorization") String authToken){
+        authService.logout(authToken);
+        Response response = new Response (true, "logout successful", null);
+        return ResponseEntity.ok(response);
+    }
+  
     @PostMapping("/forgotten-password")
     public ResponseEntity<String> forgottenPassword(@RequestBody @Valid ForgottenPasswordDto dto){
         passwordService.forgottenPassword(dto.getEmail());

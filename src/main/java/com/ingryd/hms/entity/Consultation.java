@@ -44,7 +44,7 @@ public class Consultation {
     @Length(max = 5000, message = "Prescription can't exceed 5000 characters.")
     private String prescription;
 
-    private boolean medicationDispensed;
+    //private boolean medicationDispensed;
 
     @Column(length = 1000)
     @NotBlank(message = "The Referred can't be blank.")

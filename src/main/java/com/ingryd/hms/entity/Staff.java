@@ -1,5 +1,7 @@
 package com.ingryd.hms.entity;
 
+import com.ingryd.hms.enums.Gender;
+import com.ingryd.hms.enums.Role;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.Data;
@@ -33,7 +35,7 @@ public class Staff {
 
     @Column(nullable = false, length = 11)
     @Size(min = 11, max = 11, message = "Phone number must be 11 digits.")
-    private int phoneNumber;
+    private String phoneNumber;
 
     @Column(nullable = false, length = 50)
     @NotBlank(message = "Email cannot be blank.")
@@ -42,11 +44,11 @@ public class Staff {
     @Email(message = "Invalid email format.")
     private String email;
 
-    @Column(nullable = false, length = 50)
-    @NotBlank(message = "Role cannot be blank.")
-    @NotNull(message = "Role is required.")
-    @Length(max = 50, message = "Role cannot exceed 50 characters.")
-    private String role;
+    @Enumerated(EnumType.STRING)
+    private Role role;
+
+    @Enumerated(EnumType.STRING)
+    private Gender gender;
 
     @Column(length = 50)
     @Length(max = 50, message = "Specialty cannot exceed 50 characters.")
