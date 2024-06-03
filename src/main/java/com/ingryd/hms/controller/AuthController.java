@@ -1,22 +1,16 @@
 package com.ingryd.hms.controller;
 
 
-import com.ingryd.hms.dto.ForgottenPasswordDto;
-import com.ingryd.hms.dto.PasswordDTO;
-import com.ingryd.hms.dto.Response;
-import com.ingryd.hms.dto.UserDTO;
-import com.ingryd.hms.service.AuthService;
-import com.ingryd.hms.service.MailService;
-import com.ingryd.hms.service.PasswordService;
-import com.ingryd.hms.service.TokenService;
+import com.ingryd.hms.dto.*;
+import com.ingryd.hms.exception.InternalServerException;
+import com.ingryd.hms.service.*;
 
-import com.ingryd.hms.dto.HospitalDTO;
 import com.ingryd.hms.entity.Hospital;
 import com.ingryd.hms.service.AuthService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import com.ingryd.hms.dto.LoginDTO;
 
 import jakarta.validation.Valid;
 import org.springframework.hateoas.Link;
@@ -30,7 +24,8 @@ import java.util.Optional;
 @RestController
 public class AuthController {
     @Autowired
-    private final AuthService authService;
+    private AuthService authService;
+
     @Autowired
     private PasswordService passwordService;
 
@@ -41,8 +36,8 @@ public class AuthController {
 
     @PostMapping("/patients/signup")
     @ResponseStatus(code = HttpStatus.CREATED)
-    public ResponseEntity<?> clientSignup(@RequestBody @Valid UserDTO userDTO) throws Exception {
-        authService.clientSignup(userDTO);
+    public ResponseEntity<?> patientSignup(@RequestBody @Valid UserDTO userDTO) throws Exception {
+        authService.patientSignup(userDTO);
         //build response on success
         Response response = new Response(true, "Signed up. Check mailbox to verify email quickly.", null);
         Link loginLink = WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(this.getClass()).login(null)).withRel("login");
@@ -89,5 +84,10 @@ public class AuthController {
     public ResponseEntity<?> resetPassword(PasswordDTO dto){
         passwordService.resetPassword(dto);
         return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/staff/signup")
+    public ResponseEntity<Response> createStaff(@RequestBody @Valid StaffDTO staffDTO) throws InternalServerException {
+        return authService.createStaff(staffDTO);
     }
 }

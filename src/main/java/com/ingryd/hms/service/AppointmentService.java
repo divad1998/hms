@@ -52,7 +52,7 @@ public class AppointmentService {
                 .hospitalPatient(hospitalPatient)
                 .consultantSpecialty(appointmentDTO.getConsultantSpecialty())
                 .desiredConsultant(desiredConsultant)
-                .issued(appointmentDTO.isIssued())
+                .acceptedByPatient(true)
                 .hospital(hospital)
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())

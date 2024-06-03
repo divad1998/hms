@@ -1,6 +1,7 @@
 package com.ingryd.hms.entity;
 
 import com.ingryd.hms.enums.Gender;
+import com.ingryd.hms.enums.Profession;
 import com.ingryd.hms.enums.Role;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
@@ -18,47 +19,33 @@ public class Staff {
     private Long id;
 
     @Column(nullable = false, length = 30)
-    @NotBlank(message = "First name cannot be blank.")
-    @NotNull(message = "First name is required.")
-    @Length(max = 30, message = "First name cannot exceed 30 characters.")
     private String firstName;
 
     @Column(length = 30)
-    @Length(max = 20, message = "Middle name cannot exceed 30 characters.")
     private String middleName;
 
     @Column(nullable = false, length = 30)
-    @NotBlank(message = "Last name cannot be blank.")
-    @NotNull(message = "Last name is required.")
-    @Length(max = 30, message = "Last name cannot exceed 30 characters.")
     private String lastName;
 
     @Column(nullable = false, length = 11)
-    @Size(min = 11, max = 11, message = "Phone number must be 11 digits.")
     private String phoneNumber;
 
     @Column(nullable = false, length = 50)
-    @NotBlank(message = "Email cannot be blank.")
-    @NotNull(message = "Email is required.")
-    @Length(max = 50, message = "Email cannot exceed 50 characters.")
-    @Email(message = "Invalid email format.")
     private String email;
-
-    @Enumerated(EnumType.STRING)
-    private Role role;
 
     @Enumerated(EnumType.STRING)
     private Gender gender;
 
+    @Column(nullable = false, length = 30)
+    @Enumerated(value = EnumType.STRING)
+    private Profession profession;
+
     @Column(length = 50)
-    @Length(max = 50, message = "Specialty cannot exceed 50 characters.")
     private String specialty;
 
     @Column(length = 30)
-    @Length(max = 30, message = "Level cannot exceed 30 characters.")
     private String level;
 
-    @Length(max = 255, message = "Qualifications cannot exceed 255 characters.")
     private String qualifications;
 
     @OneToOne

@@ -1,6 +1,7 @@
 package com.ingryd.hms.exceptionHandler;
 
 import com.ingryd.hms.dto.Response;
+import com.ingryd.hms.exception.InternalServerException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -38,5 +39,10 @@ public class ExceptionHandler {
     @org.springframework.web.bind.annotation.ExceptionHandler(AuthenticationException.class)
     public ResponseEntity<Response> handle(AuthenticationException e) {
         return ResponseEntity.status(400).body(new Response(false, e.getMessage(), null));
+    }
+
+    @org.springframework.web.bind.annotation.ExceptionHandler(InternalServerException.class)
+    public ResponseEntity<Response> handle(InternalServerException e) {
+        return ResponseEntity.status(500).body(new Response(false, e.getMessage(), null));
     }
 }

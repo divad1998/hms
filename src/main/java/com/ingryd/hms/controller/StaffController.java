@@ -17,10 +17,5 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class StaffController {
 
-    private final StaffService staffService;
 
-    @PostMapping("create")
-    public ResponseEntity<Response> createStaff(@RequestBody @Valid StaffDTO staffDTO){
-        return staffService.createStaff(staffDTO);
-    }
 }

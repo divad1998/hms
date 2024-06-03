@@ -46,7 +46,6 @@ public class ConsultationService {
                 .preDiagnosis(consultationDTO.getPreDiagnosis())
                 .testsToRun(consultationDTO.getTestsToRun())
                 .prescription(consultationDTO.getPrescription())
-                .medicationDispensed(consultationDTO.isMedicationDispensed())
                 .referredTo(consultationDTO.getReferredTo())
                 .completed(consultationDTO.isCompleted())
                 .createdAt(LocalDateTime.now())
