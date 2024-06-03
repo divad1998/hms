@@ -51,10 +51,10 @@ public class StaffDTO {
     @Length(max = 255, message = "Contact address can only contain 255 characters.")
     private String contactAddress;
 
-    @Enumerated(value = EnumType.STRING) //ToDo: test
+    @Enumerated(value = EnumType.STRING)
     private Gender gender;
 
-    @Enumerated(value = EnumType.STRING) //ToDo: test
+    @Enumerated(value = EnumType.STRING)
     private Profession profession;
 
     @Length(max = 50, message = "Specialty cannot exceed 50 characters.")
