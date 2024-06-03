@@ -27,10 +27,10 @@ public class MailService {
         try {
             MimeMessage mimeMessage = mailSender.createMimeMessage();
             MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage, true, "utf-8");
-            messageHelper.setFrom("hospitalmanagementsystem1.0@gmail.com");
             messageHelper.setTo(user.getEmail());
+            messageHelper.setFrom("hospitalmanagementsystem1.0@gmail.com");
             messageHelper.setSubject("Verify your email");
-            messageHelper.setText("Dear " + user.getFirstName() + "," + " kindly hit: " + "http://localhost:8080/api/v1/verify-email/" + token + " to verify your email.", "utf-8");
+            messageHelper.setText("Dear " + user.getFirstName() + "," + " kindly hit: " + "http://localhost:8080/api/v1/verify_email/" + token + " to verify your email.");
             mailSender.send(messageHelper.getMimeMessage());
         } catch (Exception e) {
             Logger logger = LoggerFactory.getLogger(this.getClass().getName());
@@ -38,4 +38,19 @@ public class MailService {
         }
     }
 
+    @Async
+    public void sendResetPasswordMail(User user, int token){
+        try {
+            MimeMessage mimeMessage = mailSender.createMimeMessage();
+            MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage, true, "utf-8");
+            messageHelper.setSubject("Reset your password");
+            messageHelper.setTo(user.getEmail());
+            messageHelper.setFrom("hospitalmanagementsystem1.0@gmail.com");
+            messageHelper.setText(String.format("Dear %s, \nYour reset token is %s. Click kindly hit: %s to reset your password. \nIf you didn't request this code, you can safely ignore this email", user.getFirstName(), token, "http://localhost:8080/api/v1/reset-password"));
+            mailSender.send(messageHelper.getMimeMessage());
+        } catch (Exception e){
+            Logger logger = LoggerFactory.getLogger(this.getClass().getName());
+            logger.error(e.getMessage());
+        }
+    }
 }

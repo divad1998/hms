@@ -34,11 +34,15 @@ public class SecurityConfiguration {
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .httpBasic(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(requestRegistry -> requestRegistry
+                .authorizeHttpRequests(requestRegistry -> requestRegistry                  
                         .requestMatchers(HttpMethod.POST, "/patients/signup/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/hospitals/signup").permitAll()
                         .requestMatchers("/admin", "/users/**", "staff/**").hasAnyAuthority(Role.ADMIN.name())
+                        .requestMatchers(HttpMethod.PUT, "/users/**").permitAll()
+                        .requestMatchers("/admin").hasAnyAuthority(Role.ADMIN.name())
+                        .requestMatchers(HttpMethod.POST, "/forgotten-password").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/logout").permitAll()
                         .anyRequest().authenticated())
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 

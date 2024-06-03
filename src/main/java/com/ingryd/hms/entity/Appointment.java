@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.function.Predicate;
 
+@Data
 @Entity(name = "appointments")
 @Data
 @AllArgsConstructor
@@ -42,7 +43,9 @@ public class Appointment {
     @JoinColumn(name = "desired_staff_id")
     private Staff desiredConsultant;
 
-    private boolean issued;
+    private boolean confirmed;
+    private boolean acceptedByPatient;
+    private boolean cancelled;
 
     @ManyToOne
     @JoinColumn(name = "hospital_id", nullable = false)
