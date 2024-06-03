@@ -1,5 +1,6 @@
 package com.ingryd.hms.service;
 
+import com.ingryd.hms.dto.Response;
 import com.ingryd.hms.dto.StaffDTO;
 import com.ingryd.hms.entity.Hospital;
 import com.ingryd.hms.entity.Staff;
@@ -41,7 +42,7 @@ public class StaffService {
             return false;
         }
     }
-    public ResponseEntity<Staff> createStaff(StaffDTO staffDTO) {
+    public ResponseEntity<Response> createStaff(StaffDTO staffDTO) {
         if (!isAdminUser()) {
             throw new RuntimeException("Only admins can create staff members.");
         }
@@ -85,7 +86,9 @@ public class StaffService {
         staff.setUser(user);
         staff.setHospital(hospital);
 
-        Staff savedStaff = staffRepository.save(staff);
-        return new ResponseEntity<>(savedStaff, HttpStatus.CREATED);
+        staffRepository.save(staff);
+        Response response = new Response();
+        response.setMessage("Staff created successfully");
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 }
