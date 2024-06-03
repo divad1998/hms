@@ -1,9 +1,8 @@
 package com.ingryd.hms.controller;
 
+import com.ingryd.hms.dto.ConsultationDTO;
 import com.ingryd.hms.dto.Response;
-import com.ingryd.hms.dto.StaffDTO;
-import com.ingryd.hms.entity.Staff;
-import com.ingryd.hms.service.StaffService;
+import com.ingryd.hms.service.ConsultationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -13,14 +12,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("staff")
+@RequestMapping("consultation")
 @RequiredArgsConstructor
-public class StaffController {
+public class ConsultationController {
 
-    private final StaffService staffService;
-
+    private final ConsultationService consultationService;
     @PostMapping("create")
-    public ResponseEntity<Response> createStaff(@RequestBody @Valid StaffDTO staffDTO){
-        return staffService.createStaff(staffDTO);
+    public ResponseEntity<Response> createConsultation(@RequestBody @Valid ConsultationDTO consultationDTO){
+        return consultationService.createConsultation(consultationDTO);
     }
 }

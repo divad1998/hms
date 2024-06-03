@@ -2,6 +2,8 @@ package com.ingryd.hms.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;
 
@@ -12,6 +14,9 @@ import java.util.function.Predicate;
 
 @Data
 @Entity(name = "appointments")
+@Data
+@AllArgsConstructor
+@Builder
 public class Appointment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -38,6 +38,7 @@ public class SecurityConfiguration {
                         .requestMatchers(HttpMethod.POST, "/patients/signup/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/hospitals/signup").permitAll()
+                        .requestMatchers("/admin", "/users/**", "staff/**").hasAnyAuthority(Role.ADMIN.name())
                         .requestMatchers(HttpMethod.PUT, "/users/**").permitAll()
                         .requestMatchers("/admin").hasAnyAuthority(Role.ADMIN.name())
                         .requestMatchers(HttpMethod.POST, "/forgotten-password").permitAll()

@@ -11,9 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -34,16 +32,49 @@ public class UserService {
         existingUser.setLastName(userDTO.getLastName());
         existingUser.setPhoneNumber(userDTO.getPhoneNumber());
         existingUser.setContactAddress(userDTO.getContactAddress());
-//        existingUser.setCreatedAt(userDTO.getCreatedAt());
+
         User updatedUser = userRepository.save(existingUser);
 
-        //map to Dto before building response
         UpdateUserDTO responseUserDTO = mapper.mapToUserDto(updatedUser);
         Map<String, Object> map = new HashMap<>();
         map.put("user", responseUserDTO);
         Response response = new Response(true, "success", map);
         return ResponseEntity.ok(response);
-        //return new ResponseEntity<>(updatedUser, HttpStatus.OK);
+
     }
 
+    public ResponseEntity<Response> getAllUsers() {
+        List<User> user = userRepository.findAll();
+        Map<String, Object> map = new HashMap<>();
+        map.put("users", user);
+        Response response = new Response(true, "success", map);
+        return ResponseEntity.ok(response);
+    }
+
+    public ResponseEntity<Response> getUserById(Long id) {
+        Optional<User> optionalUser = userRepository.findById(id);
+        if (!optionalUser.isPresent()) {
+            Response response = new Response(false, "User not found.", null);
+            return ResponseEntity.status(404).body(response);
+        }
+        User user = optionalUser.get();
+        Map<String, Object> map = new HashMap<>();
+        map.put("user", user);
+        Response response = new Response(true, "success", map);
+        return ResponseEntity.ok(response);
+    }
+
+    public ResponseEntity<Response> getUserByEmail(String email) {
+        try {
+            User user = userRepository.findByEmail(email);
+            Map<String, Object> map = new HashMap<>();
+            map.put("user", user);
+            Response response = new Response(true, "success", map);
+            return ResponseEntity.ok(response);
+        } catch (NoSuchElementException exception) {
+            System.out.println(exception.getMessage());
+            Response response = new Response(false, "User not found.", null);
+            return ResponseEntity.status(404).body(response);
+        }
+    }
 }
