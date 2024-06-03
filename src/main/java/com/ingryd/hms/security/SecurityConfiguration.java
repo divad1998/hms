@@ -38,8 +38,7 @@ public class SecurityConfiguration {
                         .requestMatchers(HttpMethod.POST, "/patients/signup/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/hospitals/signup").permitAll()
-                        .requestMatchers(HttpMethod.PUT, "/users/**").permitAll()
-                        .requestMatchers("/admin").hasAnyAuthority(Role.ADMIN.name())
+                        .requestMatchers("/admin", "/users/**", "staff/**").hasAnyAuthority(Role.ADMIN.name())
                         .anyRequest().authenticated())
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
