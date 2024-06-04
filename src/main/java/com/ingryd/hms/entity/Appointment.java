@@ -21,7 +21,7 @@ public class Appointment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Length(max = 255, message = "Reason cannot exceed 255 characters.")
+    @Column(length = 1000)
     private String reason;
 
     private boolean emergency;

@@ -6,6 +6,8 @@ import com.ingryd.hms.entity.Staff;
 import jakarta.persistence.Column;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.hibernate.validator.constraints.Length;
 
@@ -18,7 +20,7 @@ import java.time.LocalTime;
 @Builder
 public class AppointmentDTO {
 
-    @Length(max = 255, message = "Reason cannot exceed 255 characters.")
+    @Length(max = 1000, message = "Reason cannot exceed 255 characters.")
     private String reason;
 
     private boolean emergency;
@@ -27,19 +29,16 @@ public class AppointmentDTO {
 
     private LocalTime preferredTime;
 
-    private HospitalPatient hospitalPatient;
+    //private HospitalPatient hospitalPatient;
 
     @Length(max = 50, message = "Consultant's specialty can't exceed 50 characters.")
     private String consultantSpecialty;
 
-    private Staff desiredConsultant;
+    private Long desiredConsultantId;
 
-    private boolean issued;
+    //private Hospital hospital;
 
-    private Hospital hospital;
+    //private LocalDateTime createdAt;
 
-    private LocalDateTime createdAt;
-
-    private LocalDateTime updatedAt;
-
+    //private LocalDateTime updatedAt;
 }

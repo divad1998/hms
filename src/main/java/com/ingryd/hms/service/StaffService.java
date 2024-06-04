@@ -5,6 +5,7 @@ import com.ingryd.hms.dto.StaffDTO;
 import com.ingryd.hms.entity.Hospital;
 import com.ingryd.hms.entity.Staff;
 import com.ingryd.hms.entity.User;
+import com.ingryd.hms.enums.Profession;
 import com.ingryd.hms.enums.Role;
 import com.ingryd.hms.repository.HospitalRepository;
 import com.ingryd.hms.repository.StaffRepository;
@@ -17,6 +18,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -31,6 +33,15 @@ public class StaffService {
 
     private final PasswordEncoder passwordEncoder;
 
+    public List<Staff> getConsultantsBySpecialty(String specialty) {
+        return staffRepository.findBySpecialtyAndProfession(specialty, Profession.MEDICAL_DOCTOR);
+    }
 
+    public Staff getConsultantById(Long id) {
+        return staffRepository.findByIdAndProfession(id, Profession.MEDICAL_DOCTOR);
+    }
 
+    public List<Staff> getAllConsultantsOfAHospital(Long hospitalId) {
+        return staffRepository.findByHospital_Id(hospitalId);
+    }
 }

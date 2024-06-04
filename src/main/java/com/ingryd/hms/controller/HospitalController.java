@@ -37,7 +37,7 @@ public class HospitalController {
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<?> registerPatientWithHospital (@PathVariable Long id) throws InternalServerException {
         hospitalService.registerPatientWithHospital(id);
-        Response response = new Response(true, "Patient registered with hospital successfully.", null);
+        Response response = new Response(true, "Registration successful.", null);
         return ResponseEntity.ok(response);
     }
 }

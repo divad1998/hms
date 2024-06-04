@@ -155,7 +155,7 @@ public class AuthService {
         //build response
         Response response = new Response();
         response.setStatus(true);
-        response.setMessage("Staff created successfully. Email verification sent to staff mailbox.");
+        response.setMessage("Staff created successfully. Email verification sent to staff's mailbox.");
         response.setData(null);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }

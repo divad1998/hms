@@ -2,22 +2,21 @@ package com.ingryd.hms.service;
 
 import com.ingryd.hms.dto.AppointmentDTO;
 import com.ingryd.hms.dto.Response;
-import com.ingryd.hms.entity.Appointment;
-import com.ingryd.hms.entity.Hospital;
-import com.ingryd.hms.entity.HospitalPatient;
-import com.ingryd.hms.entity.Staff;
-import com.ingryd.hms.repository.AppointmentRepository;
+import com.ingryd.hms.entity.*;
+import com.ingryd.hms.exception.InternalServerException;
+import com.ingryd.hms.repository.*;
 //import com.ingryd.hms.repository.HospitalClientRepository;
-import com.ingryd.hms.repository.HospitalPatientRepository;
-import com.ingryd.hms.repository.HospitalRepository;
-import com.ingryd.hms.repository.StaffRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 @Service
 @RequiredArgsConstructor
@@ -27,23 +26,55 @@ public class AppointmentService {
     private final HospitalPatientRepository hospitalPatientRepository;
     private final StaffRepository staffRepository;
     private final HospitalRepository hospitalRepository;
+    private final HospitalService hospitalService;
+    private final AuthService authService;
+    private final StaffService staffService;
 
-    public ResponseEntity<Response> bookAppointment(AppointmentDTO appointmentDTO) {
-        Optional<HospitalPatient> optionalPatient = hospitalPatientRepository.findById(appointmentDTO.getHospitalPatient().getId());
-        if (optionalPatient.isEmpty()) {
-            throw new RuntimeException("Hospital patient not found");
+    public ResponseEntity<Response> bookAppointment(AppointmentDTO appointmentDTO, Long hospitalId) throws InternalServerException {
+        //hospital validation
+        Hospital hospital = hospitalService.validateHospital(hospitalId);
+        //is patient registered with hospital?
+        User authUser = authService.getAuthUser();
+        HospitalPatient hospitalPatient = hospitalPatientRepository.findByUser_IdAndHospital_Id(authUser.getId(), hospital.getId());
+        if (hospitalPatient == null)
+            throw new IllegalArgumentException("You aren't registered with the given hospital.");
+
+        //validate date and time
+        LocalDate preferredDate = appointmentDTO.getPreferredDate();
+        LocalTime preferredTime = appointmentDTO.getPreferredTime();
+        if (preferredTime != null && preferredDate == null)
+            throw new IllegalArgumentException("Time selected but Date is null.");
+        if (preferredDate != null && preferredTime != null) {
+            boolean confirmedAppointmentExists = appointmentRepository.findByPreferredDateAndPreferredTime(preferredDate, preferredTime).isConfirmed();
+            if (confirmedAppointmentExists)
+                throw new IllegalArgumentException("Sorry. Selected Date and Time already taken.");
         }
-        HospitalPatient hospitalPatient = optionalPatient.get();
 
-        Optional<Hospital> existingHospital = hospitalRepository.findById(appointmentDTO.getHospital().getId());
-        if (existingHospital.isEmpty()) {
-            throw new RuntimeException("Hospital not found");
+        //does hospital have consultants?
+        List<Staff> consultants = staffService.getAllConsultantsOfAHospital(hospital.getId());
+        long enabledConsultantCount = consultants.stream()
+                                                .filter(consultant -> consultant.getUser().isEnabled())
+                                                .count();
+
+        if (enabledConsultantCount == 0)
+            throw new IllegalArgumentException("Couldn't find any consultants in the hospital who are currently fully registered on this platform."); //ToDo: refactor exception type?
+
+        //validate consultant specialty
+        String specialty = appointmentDTO.getConsultantSpecialty();
+        if (specialty != null) {
+            if (staffService.getConsultantsBySpecialty(specialty).isEmpty())
+                throw new IllegalArgumentException("Invalid consultant specialty.");
         }
-        Hospital hospital = existingHospital.get();
-
-        Staff desiredConsultant = staffRepository.findById(appointmentDTO.getDesiredConsultant().getId())
-                .orElse(null);
-
+        //validate consultant id
+        Long consultantId = appointmentDTO.getDesiredConsultantId();
+        Staff consultant = null;
+        if (consultantId != 0) {
+            consultant = staffService.getConsultantById(consultantId);
+            if (consultant == null)
+                throw new IllegalArgumentException("Invalid Consultant.");
+            if (!consultant.getUser().isEnabled())
+                throw new IllegalArgumentException("Selected Consultant isn't registered fully on this platform.");
+        }
 
         Appointment appointment = Appointment.builder()
                 .reason(appointmentDTO.getReason())
@@ -52,17 +83,17 @@ public class AppointmentService {
                 .preferredTime(appointmentDTO.getPreferredTime())
                 .hospitalPatient(hospitalPatient)
                 .consultantSpecialty(appointmentDTO.getConsultantSpecialty())
-                .desiredConsultant(desiredConsultant)
+                .desiredConsultant(consultant)
                 .acceptedByPatient(true)
                 .hospital(hospital)
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
                 .build();
 
         appointmentRepository.save(appointment);
 
+        //ToDo: send in-app notifications to consultants
+        //build response
         Response response = new Response();
-        response.setMessage("Appointment booked successfully");
+        response.setMessage("Appointment requested successfully.");
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 }

@@ -56,17 +56,7 @@ public class HospitalService {
     public void registerPatientWithHospital(Long hospitalId) throws InternalServerException {
         //ToDo: process payment
         //validate hospital
-        Hospital hospital = hospitalRepository.findById(hospitalId).orElseThrow(()-> new IllegalArgumentException("Invalid hospital."));
-        //has hospital's admin verified email?
-        User hospitalAdmin = userRepository.findByEmail(hospital.getEmail());
-        if (hospitalAdmin == null) {
-            Logger logger = LoggerFactory.getLogger(this.getClass());
-            logger.error("Hospital with email: " + hospital.getEmail() + " not related with any user.");
-            throw new InternalServerException("Internal server error. Kindly reach out to support.");
-        }
-        if (!hospitalAdmin.isEnabled())
-            throw new IllegalStateException("Hospital isn't fully registered on this platform.");
-
+        Hospital hospital = validateHospital(hospitalId);
         User authUser = authService.getAuthUser();
         //is patient already registered?
         HospitalPatient hospitalPatient = hospitalPatientRepository.findByUser_IdAndHospital_Id(authUser.getId(), hospital.getId());
@@ -98,5 +88,26 @@ public class HospitalService {
         } else {
             return hospitalNumber;
         }
+    }
+
+    /**
+     * Valdates hospital: checks whether hospital exists and whether the Hospital's admin has a verified email.
+     * @param hospitalId
+     * @return
+     * @throws InternalServerException
+     */
+    public Hospital validateHospital(Long hospitalId) throws InternalServerException {
+        Hospital hospital = hospitalRepository.findById(hospitalId).orElseThrow(()-> new IllegalArgumentException("Invalid hospital."));
+        //has hospital's admin verified email?
+        User hospitalAdmin = userRepository.findByEmail(hospital.getEmail());
+        if (hospitalAdmin == null) {
+            Logger logger = LoggerFactory.getLogger(this.getClass());
+            logger.error("Hospital with email: " + hospital.getEmail() + " not related with any user.");
+            throw new InternalServerException("Internal server error. Kindly reach out to support.");
+        }
+        if (!hospitalAdmin.isEnabled())
+            throw new IllegalStateException("The hospital isn't fully registered on this platform.");
+
+        return hospital;
     }
 }

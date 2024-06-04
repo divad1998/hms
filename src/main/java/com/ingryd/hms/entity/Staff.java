@@ -52,7 +52,7 @@ public class Staff {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "hospital_id")
     private Hospital hospital;
 
