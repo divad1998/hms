@@ -27,7 +27,7 @@ public class ExceptionHandler {
 
     @org.springframework.web.bind.annotation.ExceptionHandler(SQLIntegrityConstraintViolationException.class)
     public ResponseEntity<Response> handle(SQLIntegrityConstraintViolationException e) {
-        String msg = "Either the email or phone number has being registered already.";
+        String msg = "Either the email|phone number|website|hfrn|hospital name (if present) has been registered already.";
         return ResponseEntity.status(422).body(new Response(false, msg, null));
     }
 

@@ -29,14 +29,9 @@ public class Consultation {
     private Staff staff; // should only be a CONSULTANT
 
     @Column(nullable = false, length = 1000)
-    @NotBlank(message = "Comment can't be blank.")
-    @NotNull(message = "A comment is required.")
-    @Length(max = 1000, message = "Comment cannot exceed 1000 characters.")
     private String comment;
 
-    @Column(length = 100)
-    @NotBlank(message = "Preliminary diagnosis can't be blank.")
-    @Length(max = 100, message = "Preliminary diagnosis cannot exceed 100 characters.")
+    @Column(length = 500)
     private String preDiagnosis;
 
     @Column(length = 1000)
@@ -49,7 +44,8 @@ public class Consultation {
     @Length(max = 5000, message = "Prescription can't exceed 5000 characters.")
     private String prescription;
 
-    //private boolean medicationDispensed;
+    @Column(length = 500)
+    private String diagnosis;
 
     @Column(length = 1000)
     @NotBlank(message = "The Referred can't be blank.")
@@ -57,6 +53,10 @@ public class Consultation {
     private String referredTo;
 
     private boolean completed;
+
+    @ManyToOne
+    @JoinColumn(name = "hospital_id", nullable = false)
+    private Hospital hospital;
 
     private LocalDateTime createdAt;
 

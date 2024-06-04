@@ -44,4 +44,8 @@ public class StaffService {
     public List<Staff> getAllConsultantsOfAHospital(Long hospitalId) {
         return staffRepository.findByHospital_Id(hospitalId);
     }
+
+    public Staff getStaffByUserId(Long userId) {
+        return staffRepository.findByUser_Id(userId);
+    }
 }
