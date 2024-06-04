@@ -39,4 +39,8 @@ public class ExceptionHandler {
     public ResponseEntity<Response> handle(AuthenticationException e) {
         return ResponseEntity.status(400).body(new Response(false, e.getMessage(), null));
     }
+    @org.springframework.web.bind.annotation.ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<Response> handle(IllegalArgumentException e) {
+        return ResponseEntity.status(404).body(new Response(false, e.getMessage(), null));
+    }
 }

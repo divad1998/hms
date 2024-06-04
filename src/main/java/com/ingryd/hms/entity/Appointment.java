@@ -40,6 +40,8 @@ public class Appointment {
 
     private boolean issued;
 
+    private boolean confirmed;
+
     @ManyToOne
     @JoinColumn(name = "hospital_id", nullable = false)
     private Hospital hospital;

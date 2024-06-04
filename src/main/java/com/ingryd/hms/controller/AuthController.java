@@ -1,36 +1,27 @@
 package com.ingryd.hms.controller;
 
 
-import com.ingryd.hms.dto.ForgottenPasswordDto;
-import com.ingryd.hms.dto.PasswordDTO;
-import com.ingryd.hms.dto.Response;
-import com.ingryd.hms.dto.UserDTO;
+import com.ingryd.hms.dto.*;
 import com.ingryd.hms.service.AuthService;
-import com.ingryd.hms.service.MailService;
 import com.ingryd.hms.service.PasswordService;
-import com.ingryd.hms.service.TokenService;
-
-import com.ingryd.hms.dto.HospitalDTO;
-import com.ingryd.hms.entity.Hospital;
-import com.ingryd.hms.service.AuthService;
-import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import com.ingryd.hms.dto.LoginDTO;
-
 import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
 @RestController
+
 public class AuthController {
+
     @Autowired
-    private final AuthService authService;
+    private  AuthService authService;
     @Autowired
     private PasswordService passwordService;
 

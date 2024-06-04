@@ -22,7 +22,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
-public class SecurityConfiguration {
+public class    SecurityConfiguration {
 
     @Autowired
     private JwtFilter jwtFilter;
@@ -42,6 +42,7 @@ public class SecurityConfiguration {
                         .requestMatchers("/admin").hasAnyAuthority(Role.ADMIN.name())
                         .requestMatchers(HttpMethod.POST, "/forgotten-password").permitAll()
                         .requestMatchers(HttpMethod.POST, "/logout").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/appointments/confirm").hasAnyAuthority(Role.ADMIN.name(), Role.CONSULTANT.name())
                         .anyRequest().authenticated())
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 

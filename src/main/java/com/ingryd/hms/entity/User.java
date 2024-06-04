@@ -51,7 +51,7 @@ public class User implements UserDetails {
 
     private LocalDateTime updatedAt;
 
-    private boolean enabled;
+//    private boolean enabled;
 
 
 
