@@ -6,6 +6,8 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +20,7 @@ public class JwtService {
 
     //@Value("${hms.jwt.secret_key}")
     private final static String SECRET_KEY = "5367566B59703373357638792F423F4528482B4D6251655468576D5A71347437";
+    private Set<String> tokenBlackList = new HashSet<>(); //ToDo: refactor to store in the db or cache
 
     private Key getSigningKey(){
         byte[] keyBytes = Decoders.BASE64.decode(SECRET_KEY);
@@ -68,8 +71,17 @@ public class JwtService {
         return username.equalsIgnoreCase(userDetails.getUsername()) && !isTokenExpired(token);
 
     }
-    private Set<String> tokenBlackList = new HashSet<>();
+
     public void invalidateToken(String token) {
         tokenBlackList.add(token);
+    }
+
+    /**
+     * Checks storage whether token is blacklisted.
+     * @param token
+     * @return
+     */
+    public boolean isTokenBlacklisted(String token) {
+        return tokenBlackList.contains(token);
     }
 }

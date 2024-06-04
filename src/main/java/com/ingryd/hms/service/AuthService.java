@@ -93,7 +93,6 @@ public class AuthService {
         user = userRepository.save(user);
         int token = tokenService.generateToken();
         Token savedToken = tokenService.saveToken(token, user);
-        System.out.println(token);// Save token
         //send verification mail
         mailService.sendEmailVerificationMail(user, savedToken.getValue());
     }
@@ -165,7 +164,7 @@ public class AuthService {
      * Fetches the authenticated user.
      * @return the authenticated user
      */
-    private User getAuthUser() {
+    public User getAuthUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return (User) authentication.getPrincipal();
     }

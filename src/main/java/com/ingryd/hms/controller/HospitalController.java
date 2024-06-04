@@ -2,6 +2,7 @@ package com.ingryd.hms.controller;
 
 import com.ingryd.hms.dto.Response;
 import com.ingryd.hms.entity.Hospital;
+import com.ingryd.hms.exception.InternalServerException;
 import com.ingryd.hms.service.HospitalService;
 import lombok.AllArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
@@ -32,11 +33,11 @@ public class HospitalController {
         return hospitalService.getByHospitalName(hospitalName);
     }
 
-    @PostMapping("/{hospitalId}/registerPatient")
+    @PostMapping("/{id}/patient-registration")
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<?> registerPatientWithHospital (@PathVariable Long hospitalId, @RequestParam Long patientId){
-        hospitalService.registerPatientWithHospital(patientId, hospitalId);
-        Response response = new Response(true, "Patient registered with hospital successfully", null);
+    public ResponseEntity<?> registerPatientWithHospital (@PathVariable Long id) throws InternalServerException {
+        hospitalService.registerPatientWithHospital(id);
+        Response response = new Response(true, "Patient registered with hospital successfully.", null);
         return ResponseEntity.ok(response);
     }
 }

@@ -7,7 +7,8 @@ import com.ingryd.hms.entity.Hospital;
 import com.ingryd.hms.entity.HospitalPatient;
 import com.ingryd.hms.entity.Staff;
 import com.ingryd.hms.repository.AppointmentRepository;
-import com.ingryd.hms.repository.HospitalClientRepository;
+//import com.ingryd.hms.repository.HospitalClientRepository;
+import com.ingryd.hms.repository.HospitalPatientRepository;
 import com.ingryd.hms.repository.HospitalRepository;
 import com.ingryd.hms.repository.StaffRepository;
 import lombok.RequiredArgsConstructor;
@@ -23,12 +24,12 @@ import java.util.Optional;
 public class AppointmentService {
 
     private final AppointmentRepository appointmentRepository;
-    private final HospitalClientRepository hospitalClientRepository;
+    private final HospitalPatientRepository hospitalPatientRepository;
     private final StaffRepository staffRepository;
     private final HospitalRepository hospitalRepository;
 
     public ResponseEntity<Response> bookAppointment(AppointmentDTO appointmentDTO) {
-        Optional<HospitalPatient> optionalPatient = hospitalClientRepository.findById(appointmentDTO.getHospitalPatient().getId());
+        Optional<HospitalPatient> optionalPatient = hospitalPatientRepository.findById(appointmentDTO.getHospitalPatient().getId());
         if (optionalPatient.isEmpty()) {
             throw new RuntimeException("Hospital patient not found");
         }

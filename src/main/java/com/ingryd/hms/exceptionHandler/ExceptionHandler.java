@@ -45,4 +45,14 @@ public class ExceptionHandler {
     public ResponseEntity<Response> handle(InternalServerException e) {
         return ResponseEntity.status(500).body(new Response(false, e.getMessage(), null));
     }
+
+    @org.springframework.web.bind.annotation.ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<Response> handle(IllegalArgumentException e) {
+        return ResponseEntity.status(422).body(new Response(false, e.getMessage(), null));
+    }
+
+    @org.springframework.web.bind.annotation.ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<Response> handle(IllegalStateException e) {
+        return ResponseEntity.status(422).body(new Response(false, e.getMessage(), null));
+    }
 }

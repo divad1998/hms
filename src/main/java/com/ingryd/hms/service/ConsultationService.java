@@ -6,7 +6,8 @@ import com.ingryd.hms.entity.Consultation;
 import com.ingryd.hms.entity.HospitalPatient;
 import com.ingryd.hms.entity.Staff;
 import com.ingryd.hms.repository.ConsultationRepository;
-import com.ingryd.hms.repository.HospitalClientRepository;
+//import com.ingryd.hms.repository.HospitalClientRepository;
+import com.ingryd.hms.repository.HospitalPatientRepository;
 import com.ingryd.hms.repository.StaffRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -24,7 +25,7 @@ public class ConsultationService {
 
     private final StaffRepository staffRepository;
 
-    private final HospitalClientRepository hospitalClientRepository;
+    private final HospitalPatientRepository hospitalPatientRepository;
 
     public ResponseEntity<Response> createConsultation(ConsultationDTO consultationDTO) {
         Optional<Staff> adminStaff = staffRepository.findById(consultationDTO.getStaff().getId());
@@ -33,7 +34,7 @@ public class ConsultationService {
         }
         Staff staff = adminStaff.get();
 
-        Optional<HospitalPatient> existingHospital = hospitalClientRepository.findById(consultationDTO.getHospitalPatient().getId());
+        Optional<HospitalPatient> existingHospital = hospitalPatientRepository.findById(consultationDTO.getHospitalPatient().getId());
         if (existingHospital.isEmpty()) {
             throw new RuntimeException("HospitalPatient not found");
         }

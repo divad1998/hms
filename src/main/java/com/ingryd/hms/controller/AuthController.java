@@ -7,6 +7,7 @@ import com.ingryd.hms.service.*;
 
 import com.ingryd.hms.entity.Hospital;
 import com.ingryd.hms.service.AuthService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +23,7 @@ import java.util.Map;
 import java.util.Optional;
 
 @RestController
+@RequestMapping("auth")
 public class AuthController {
     @Autowired
     private AuthService authService;
@@ -68,9 +70,12 @@ public class AuthController {
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<?> logout(@RequestHeader ("Authorization") String authToken){
-        authService.logout(authToken);
-        Response response = new Response (true, "logout successful", null);
+    public ResponseEntity<?> logout(@RequestHeader ("Authorization") String authToken, HttpServletRequest request){
+        //get actual token
+        String jwtToken = authToken.substring(7);
+
+        authService.logout(jwtToken);
+        Response response = new Response (true, "logout successful.", null);
         return ResponseEntity.ok(response);
     }
   

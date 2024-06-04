@@ -35,15 +35,12 @@ public class SecurityConfiguration {
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(requestRegistry -> requestRegistry                  
-                        .requestMatchers(HttpMethod.POST, "/patients/signup").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/login").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/hospitals/signup").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/staff/signup").hasAuthority(Role.ADMIN.name())
-                        //.requestMatchers("/admin", "/users/**", "staff/**").hasAnyAuthority(Role.ADMIN.name())
-                        .requestMatchers(HttpMethod.PUT, "/users/**").permitAll()
-                        .requestMatchers("/admin").hasAnyAuthority(Role.ADMIN.name())
-                        .requestMatchers(HttpMethod.POST, "/forgotten-password").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/logout").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/auth/patients/signup").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/auth/hospitals/signup").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/auth/staff/signup").hasAuthority(Role.ADMIN.name())
+                        .requestMatchers(HttpMethod.POST, "/auth/forgotten-password").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/hospitals/{id}/patient-registration").hasAuthority(Role.PATIENT.name())
                         .anyRequest().authenticated())
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
