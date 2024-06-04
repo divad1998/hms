@@ -48,8 +48,8 @@ public class AuthController {
     }
 
     @PostMapping("/email_verification")
-    public ResponseEntity<String> verifyEmail(VerificationDTO dto) {
-        authService.verifyEmail(dto.getValue());
+    public ResponseEntity<String> verifyEmail(@RequestBody @Valid VerificationDTO dto) {
+        authService.emailVerification(dto.getValue());
         return new ResponseEntity<>("verified!", HttpStatus.OK); //ToDo: refactor
     }
 
@@ -75,14 +75,14 @@ public class AuthController {
         return ResponseEntity.ok(response);
     }
   
-    @PostMapping("/forgotten-password")
+    @PostMapping("/forgotten_password")
     public ResponseEntity<String> forgottenPassword(@RequestBody @Valid ForgottenPasswordDto dto){
         passwordService.forgottenPassword(dto.getEmail());
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/reset-password")
-    public ResponseEntity<?> resetPassword(PasswordDTO dto){
+    @PostMapping("/reset_password")
+    public ResponseEntity<?> resetPassword(@PathVariable @Valid PasswordDTO dto){
         passwordService.resetPassword(dto);
         return ResponseEntity.ok().build();
     }

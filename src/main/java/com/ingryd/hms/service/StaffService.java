@@ -30,6 +30,10 @@ public class StaffService {
 
     private final PasswordEncoder passwordEncoder;
 
+    private final MailService mailService;
+
+    private final TokenService tokenService;
+
     public boolean isAdminUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getName();
@@ -86,6 +90,12 @@ public class StaffService {
         staff.setHospital(hospital);
 
         Staff savedStaff = staffRepository.save(staff);
+
+        //Token Service
+        int token = tokenService.generateToken();
+        tokenService.saveToken(token, user);
+        mailService.sendEmailVerificationMail(user, token);
+
         return new ResponseEntity<>(savedStaff, HttpStatus.CREATED);
     }
 }

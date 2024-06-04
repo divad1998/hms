@@ -41,6 +41,7 @@ public class SecurityConfiguration {
                         .requestMatchers(HttpMethod.PUT, "/users/**").permitAll()
                         .requestMatchers("/admin").hasAnyAuthority(Role.ADMIN.name())
                         .requestMatchers(HttpMethod.POST, "/forgotten-password").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/email_verification").permitAll()
                         .requestMatchers(HttpMethod.POST, "/logout").permitAll()
                         .anyRequest().authenticated())
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);

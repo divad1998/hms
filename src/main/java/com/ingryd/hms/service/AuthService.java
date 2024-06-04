@@ -68,6 +68,7 @@ public class AuthService {
         int token = tokenService.generateToken();
         Token savedToken = tokenService.saveToken(token, adminUser);
         //ToDo: send mail below
+        mailService.sendEmailVerificationMail(adminUser, token);
 
         //response
         Response response = new Response(true, "Signed up. Check mailbox to verify email quickly.", null);
@@ -87,9 +88,8 @@ public class AuthService {
         mailService.sendEmailVerificationMail(user, savedToken.getValue());
     }
 
-    public void verifyEmail(int value){
+    public void emailVerification(int value){
         Token token = tokenRepository.findByValue(value).get();
-        System.out.println(token);
         User user = token.getUser();
         user.setEnabled(true);
         userRepository.save(user);
