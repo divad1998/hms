@@ -11,9 +11,9 @@ spring:
         physical-strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
       ddl-auto: create-drop
   datasource:
-    url: jdbc:mysql://localhost:3306/hms-dev
+    url: jdbc:mysql://localhost:3306/hms_dev
     username: root
-    password: ihvadream
+    password: Mariamtinu96
   mail:
     host: smtp.gmail.com
     port: 465

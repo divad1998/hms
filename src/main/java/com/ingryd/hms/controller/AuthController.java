@@ -5,6 +5,7 @@ import com.ingryd.hms.dto.ForgottenPasswordDto;
 import com.ingryd.hms.dto.PasswordDTO;
 import com.ingryd.hms.dto.Response;
 import com.ingryd.hms.dto.UserDTO;
+import com.ingryd.hms.entity.Staff;
 import com.ingryd.hms.service.AuthService;
 import com.ingryd.hms.service.MailService;
 import com.ingryd.hms.service.PasswordService;
@@ -14,6 +15,7 @@ import com.ingryd.hms.dto.HospitalDTO;
 import com.ingryd.hms.entity.Hospital;
 import com.ingryd.hms.service.AuthService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.ingryd.hms.dto.LoginDTO;
@@ -23,13 +25,13 @@ import org.springframework.hateoas.Link;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.HttpStatus;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @RestController
+@RequiredArgsConstructor
+@RequestMapping
 public class AuthController {
-    @Autowired
+
     private final AuthService authService;
     @Autowired
     private PasswordService passwordService;
@@ -89,5 +91,17 @@ public class AuthController {
     public ResponseEntity<?> resetPassword(PasswordDTO dto){
         passwordService.resetPassword(dto);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/consultants/consultant-specialties")
+    public ResponseEntity<Set<String>> getAllConsultantSpecialties() {
+        Set<String> specialties = authService.getAllConsultantSpecialties();
+        return ResponseEntity.ok(specialties);
+    }
+
+    @GetMapping("/consultants")
+    public ResponseEntity<List<Staff>> getConsultantsBySpecialty(@RequestParam String specialty) {
+        List<Staff> consultants = authService.getConsultantsBySpecialty(specialty);
+        return ResponseEntity.ok(consultants);
     }
 }

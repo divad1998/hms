@@ -5,10 +5,12 @@ import com.ingryd.hms.dto.LoginDTO;
 import com.ingryd.hms.dto.Response;
 import com.ingryd.hms.dto.UserDTO;
 import com.ingryd.hms.entity.Hospital;
+import com.ingryd.hms.entity.Staff;
 import com.ingryd.hms.entity.Token;
 import com.ingryd.hms.entity.User;
 import com.ingryd.hms.enums.Role;
 import com.ingryd.hms.mapper.Mapper;
+import com.ingryd.hms.repository.StaffRepository;
 import com.ingryd.hms.repository.TokenRepository;
 import com.ingryd.hms.repository.HospitalRepository;
 import com.ingryd.hms.repository.UserRepository;
@@ -24,6 +26,11 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 public class AuthService {
@@ -36,6 +43,7 @@ public class AuthService {
     private final AuthenticationManager authManager;
     private final JwtService jwtService;
     private final MailService mailService;
+    private final StaffRepository staffRepository;
 
     @Transactional
     public ResponseEntity<Response> postHospital(HospitalDTO hospitalDTO){
@@ -112,5 +120,28 @@ public class AuthService {
 
     public void logout(String authToken){
         jwtService.invalidateToken(authToken);
+    }
+
+    public Set<String> getAllConsultantSpecialties() {
+        List<Staff> allStaff = staffRepository.findAll();
+        Set<String> specialties = new HashSet<>();
+
+        for (Staff staff : allStaff) {
+            String specialty = staff.getSpecialty();
+            if (specialty != null && !specialty.isEmpty()) {
+                specialties.add(specialty.toLowerCase()); // Convert to lowercase and add to the set
+            }
+        }
+        return specialties;
+    }
+
+    public List<Staff> getConsultantsBySpecialty(String specialty) {
+        // Fetch all staff members from the repository
+        List<Staff> allStaff = staffRepository.findAll();
+
+        // Filter staff members by the given specialty (case-insensitive)
+        return allStaff.stream()
+                .filter(staff -> specialty.equalsIgnoreCase(staff.getSpecialty()))
+                .collect(Collectors.toList());
     }
 }
