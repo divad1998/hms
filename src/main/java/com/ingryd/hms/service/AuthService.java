@@ -69,7 +69,9 @@ public class AuthService {
         //generate token and send verification mail
         int token = tokenService.generateToken();
         Token savedToken = tokenService.saveToken(token, adminUser);
+        System.out.println(token);// Save token
         //ToDo: send mail below
+        mailService.sendEmailVerificationMail(adminUser, savedToken.getValue());
 
         //response
         Response response = new Response(true, "Signed up. Check mailbox to verify email quickly.", null);
