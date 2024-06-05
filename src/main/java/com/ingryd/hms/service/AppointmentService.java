@@ -2,21 +2,41 @@ package com.ingryd.hms.service;
 
 import com.ingryd.hms.dto.AppointmentDTO;
 import com.ingryd.hms.dto.ConfirmAppointmentDto;
-import com.ingryd.hms.entity.Appointment;
-import com.ingryd.hms.entity.User;
+import com.ingryd.hms.dto.Response;
+import com.ingryd.hms.entity.*;
 import com.ingryd.hms.enums.Role;
-import com.ingryd.hms.repository.AppointmentRepository;
-import com.ingryd.hms.repository.UserRepository;
+import com.ingryd.hms.exception.InternalServerException;
+import com.ingryd.hms.repository.*;
+import lombok.Builder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.List;
+
 @Service
+@Builder
 public class AppointmentService {
     @Autowired
     private AppointmentRepository appointmentRepository;
 
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private HospitalPatientRepository hospitalPatientRepository;
+    @Autowired
+    private StaffRepository staffRepository;
+    @Autowired
+    private HospitalRepository hospitalRepository;
+    @Autowired
+    private HospitalService hospitalService;
+    @Autowired
+    private AuthService authService;
+    @Autowired
+    private StaffService staffService;
 
     public Appointment confirmAppointment(ConfirmAppointmentDto confirmAppointmentDTO, String email) {
         Appointment appointment = appointmentRepository.findById(confirmAppointmentDTO.getAppointmentId())
@@ -65,5 +85,81 @@ public class AppointmentService {
         }
 
         return appointmentRepository.save(appointment);
+
+
+    }
+    public ResponseEntity<Response> bookAppointment(AppointmentDTO appointmentDTO, Long hospitalId) throws InternalServerException {
+        //hospital validation
+        Hospital hospital = hospitalService.validateHospital(hospitalId);
+        //is patient registered with hospital?
+        User authUser = authService.getAuthUser();
+        HospitalPatient hospitalPatient = hospitalPatientRepository.findByUser_IdAndHospital_Id(authUser.getId(), hospital.getId());
+        if (hospitalPatient == null)
+            throw new IllegalArgumentException("You aren't registered with the given hospital.");
+
+        //validate date and time
+        LocalDate preferredDate = appointmentDTO.getPreferredDate();
+        LocalTime preferredTime = appointmentDTO.getPreferredTime();
+        if (preferredTime != null && preferredDate == null)
+            throw new IllegalArgumentException("Time selected but Date is null.");
+        if (preferredDate != null && preferredTime != null) {
+            boolean confirmedAppointmentExists = appointmentRepository.findByPreferredDateAndPreferredTime(preferredDate, preferredTime).isConfirmed();
+            if (confirmedAppointmentExists)
+                throw new IllegalArgumentException("Sorry. Selected Date and Time already taken.");
+        }
+
+        //does hospital have consultants?
+        List<Staff> consultants = staffService.getAllConsultantsOfAHospital(hospital.getId());
+        long enabledConsultantCount = consultants.stream()
+                                                .filter(consultant -> consultant.getUser().isEnabled())
+                                                .count();
+
+        if (enabledConsultantCount == 0)
+            throw new IllegalArgumentException("Couldn't find any consultants in the hospital who are currently fully registered on this platform.");
+        //ToDo: refactor exception type?
+
+        //validate consultant specialty
+        String specialty = appointmentDTO.getConsultantSpecialty();
+        if (specialty != null) {
+            if (staffService.getConsultantsBySpecialty(specialty).isEmpty())
+                throw new IllegalArgumentException("Invalid consultant specialty.");
+        }
+        //validate consultant id
+        Long consultantId = appointmentDTO.getDesiredConsultantId();
+        Staff consultant = null;
+        if (consultantId != 0) {
+            consultant = staffService.getConsultantById(consultantId);
+            if (consultant == null)
+                throw new IllegalArgumentException("Invalid Consultant.");
+            if (!consultant.getUser().isEnabled())
+                throw new IllegalArgumentException("Selected Consultant isn't registered fully on this platform.");
+        }
+
+        Appointment appointment = Appointment.builder()
+                .reason(appointmentDTO.getReason())
+                .emergency(appointmentDTO.isEmergency())
+                .preferredDate(appointmentDTO.getPreferredDate())
+                .preferredTime(appointmentDTO.getPreferredTime())
+                .hospitalPatient(hospitalPatient)
+                .consultantSpecialty(appointmentDTO.getConsultantSpecialty())
+                .desiredConsultant(consultant)
+                .acceptedByPatient(true)
+                .hospital(hospital)
+                .build();
+
+        appointmentRepository.save(appointment);
+
+        //ToDo: send in-app notifications to consultants
+        //build response
+        Response response = new Response();
+        response.setMessage("Appointment requested successfully.");
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
+
     }
 }
+//
+//    public void bookAppointment() {
+//    }
+//
+//    public void bookAppointment() {
+//    }

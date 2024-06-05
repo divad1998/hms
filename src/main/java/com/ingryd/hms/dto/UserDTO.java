@@ -44,6 +44,7 @@ public class UserDTO {
 
     @NotBlank(message = "Contact address can't be blank.")
     @NotNull(message = "Contact address can't be null.")
+    @Length(max = 255, message = "Contact address can only contain 255 characters.")
     private String contactAddress;
 
     private Role role;

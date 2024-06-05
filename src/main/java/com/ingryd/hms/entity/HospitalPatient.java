@@ -22,7 +22,7 @@ public class HospitalPatient {
     private String hospitalNumber;
 
     @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "patient_id", nullable = false)
     private User user;
 
     @ManyToOne

@@ -1,19 +1,26 @@
 package com.ingryd.hms.dto;
 
 import com.ingryd.hms.entity.Staff;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.hibernate.validator.constraints.Length;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class AppointmentDTO {
 
     private Long id;
 
-    @Size(max = 255, message = "Reason cannot exceed 255 characters.")
+
+    @Length(max = 1000, message = "Reason cannot exceed 255 characters.")
     private String reason;
 
     private boolean emergency;
@@ -24,7 +31,12 @@ public class AppointmentDTO {
 
     private Long hospitalPatientId;
 
-    @Size(max = 50, message = "Consultant's specialty can't exceed 50 characters.")
+//    @Size(max = 50, message = "Consultant's specialty can't exceed 50 characters.")
+
+    //private HospitalPatient hospitalPatient;
+
+    @Length(max = 50, message = "Consultant's specialty can't exceed 50 characters.")
+
     private String consultantSpecialty;
 
     private Long desiredConsultantId;
@@ -41,4 +53,5 @@ public class AppointmentDTO {
     public void setDesiredConsultant(Staff desiredConsultant) {
         this.desiredConsultant = desiredConsultant;
     }
+
 }

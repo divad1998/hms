@@ -2,6 +2,8 @@ package com.ingryd.hms.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;
 
@@ -10,14 +12,16 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.function.Predicate;
 
-@Data
 @Entity(name = "appointments")
+@Data
+@AllArgsConstructor
+@Builder
 public class Appointment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Length(max = 255, message = "Reason cannot exceed 255 characters.")
+    @Column(length = 1000)
     private String reason;
 
     private boolean emergency;
@@ -38,9 +42,11 @@ public class Appointment {
     @JoinColumn(name = "desired_staff_id")
     private Staff desiredConsultant;
 
-    private boolean issued;
-
     private boolean confirmed;
+    private boolean acceptedByPatient;
+    private boolean cancelled;
+
+//    private boolean confirmed;
 
     @ManyToOne
     @JoinColumn(name = "hospital_id", nullable = false)

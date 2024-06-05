@@ -2,8 +2,11 @@ package com.ingryd.hms.controller;
 
 import com.ingryd.hms.dto.AppointmentDTO;
 import com.ingryd.hms.dto.ConfirmAppointmentDto;
+import com.ingryd.hms.dto.Response;
 import com.ingryd.hms.entity.Appointment;
+import com.ingryd.hms.exception.InternalServerException;
 import com.ingryd.hms.service.AppointmentService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -36,4 +39,9 @@ public class AppointmentController {
         return appointmentService.confirmAppointment(confirmAppointmentDto, username);
     }
 
+    @PostMapping("/{hospitalId}/request")
+    public ResponseEntity<Response> bookAppointment(@RequestBody @Valid AppointmentDTO appointmentDTO, @PathVariable Long hospitalId) throws InternalServerException {
+        return appointmentService.bookAppointment(appointmentDTO, hospitalId);
+    }
 }
+
