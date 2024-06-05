@@ -14,6 +14,7 @@ import com.ingryd.hms.dto.HospitalDTO;
 import com.ingryd.hms.entity.Hospital;
 import com.ingryd.hms.service.AuthService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.ingryd.hms.dto.LoginDTO;
@@ -28,6 +29,7 @@ import java.util.Map;
 import java.util.Optional;
 
 @RestController
+@RequiredArgsConstructor
 public class AuthController {
     @Autowired
     private final AuthService authService;
