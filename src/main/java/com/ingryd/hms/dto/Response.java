@@ -12,6 +12,7 @@ import java.util.Map;
 
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class Response extends RepresentationModel<Response> {
     private boolean status;
     private String message;
