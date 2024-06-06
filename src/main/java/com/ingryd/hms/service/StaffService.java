@@ -24,15 +24,25 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class StaffService {
-
     private final StaffRepository staffRepository;
-
     private final UserRepository userRepository;
-
     private final HospitalRepository hospitalRepository;
-
     private final PasswordEncoder passwordEncoder;
+    private final MailService mailService;
+    private final TokenService tokenService;
 
+    public boolean isAdminUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+        Optional<User> adminUser = Optional.ofNullable(userRepository.findByEmail(email));
+        if (adminUser.isPresent()) {
+            User user = adminUser.get();
+            return user.getRole() == Role.ADMIN;
+        } else {
+            return false;
+        }
+    }
+  
     public List<Staff> getConsultantsBySpecialty(String specialty) {
         return staffRepository.findBySpecialtyAndProfession(specialty, Profession.MEDICAL_DOCTOR);
     }

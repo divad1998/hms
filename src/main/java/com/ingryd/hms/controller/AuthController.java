@@ -1,14 +1,15 @@
 package com.ingryd.hms.controller;
+import com.ingryd.hms.dto.*;
+import com.ingryd.hms.service.AuthService;
+import com.ingryd.hms.service.PasswordService;
+import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
-
-import com.ingryd.hms.dto.ForgottenPasswordDto;
 import com.ingryd.hms.dto.PasswordDTO;
 import com.ingryd.hms.dto.Response;
 import com.ingryd.hms.dto.UserDTO;
-import com.ingryd.hms.service.AuthService;
-import com.ingryd.hms.service.MailService;
-import com.ingryd.hms.service.PasswordService;
-import com.ingryd.hms.service.TokenService;
 
 import com.ingryd.hms.dto.HospitalDTO;
 import com.ingryd.hms.entity.Hospital;
@@ -18,7 +19,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.ingryd.hms.dto.LoginDTO;
-
 import jakarta.validation.Valid;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
@@ -29,7 +29,6 @@ import java.util.Map;
 import java.util.Optional;
 
 @RestController
-@RequiredArgsConstructor
 public class AuthController {
     @Autowired
     private final AuthService authService;
@@ -53,10 +52,10 @@ public class AuthController {
         return ResponseEntity.of(Optional.of(response));
     }
 
-    @GetMapping("/verify_email")
-    public ResponseEntity<?> verifyEmail(int value) {
-        authService.verifyEmail(value);
-        return ResponseEntity.ok().build();
+    @PostMapping("/email_verification")
+    public ResponseEntity<String> verifyEmail(@RequestBody @Valid VerificationDTO dto) {
+        authService.emailVerification(dto.getValue());
+        return new ResponseEntity<>("verified!", HttpStatus.OK); //ToDo: refactor
     }
 
     @PostMapping("/login")
@@ -81,14 +80,14 @@ public class AuthController {
         return ResponseEntity.ok(response);
     }
   
-    @PostMapping("/forgotten-password")
+    @PostMapping("/forgotten_password")
     public ResponseEntity<String> forgottenPassword(@RequestBody @Valid ForgottenPasswordDto dto){
         passwordService.forgottenPassword(dto.getEmail());
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/reset-password")
-    public ResponseEntity<?> resetPassword(PasswordDTO dto){
+    @PostMapping("/reset_password")
+    public ResponseEntity<?> resetPassword(@PathVariable @Valid PasswordDTO dto){
         passwordService.resetPassword(dto);
         return ResponseEntity.ok().build();
     }

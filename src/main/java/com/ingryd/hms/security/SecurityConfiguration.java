@@ -40,11 +40,12 @@ public class SecurityConfiguration {
                         .requestMatchers(HttpMethod.POST, "/auth/hospitals/signup").permitAll()
                         .requestMatchers(HttpMethod.POST, "/auth/staff/signup").hasAuthority(Role.ADMIN.name())
                         .requestMatchers(HttpMethod.POST, "/auth/forgotten-password").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/auth/email_verification").permitAll()
                         .requestMatchers(HttpMethod.POST, "/hospitals/{id}/patient-registration").hasAuthority(Role.PATIENT.name())
                         .requestMatchers(HttpMethod.POST, "/appointments/{hospitalId}/request").hasAuthority(Role.PATIENT.name())
                         .requestMatchers(HttpMethod.POST, "/consultations").hasAnyAuthority(Role.CONSULTANT.name())
                         .requestMatchers(HttpMethod.POST, "/consultants/consultant-specialties").hasAuthority(Role.PATIENT.name())
-                        .requestMatchers(HttpMethod.POST, "consultants").hasAuthority(Role.PATIENT.name())
+                        .requestMatchers(HttpMethod.POST, "consultants").hasAuthority(Role.PATIENT.name())      
                         .anyRequest().authenticated())
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 

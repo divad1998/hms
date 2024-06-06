@@ -15,7 +15,6 @@ import com.ingryd.hms.repository.UserRepository;
 import com.ingryd.hms.security.JwtService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -33,10 +32,10 @@ public class AuthService {
 
     private final UserRepository userRepository;
     private final TokenService tokenService;
+    private final MailService mailService;
     private final TokenRepository tokenRepository;
     private final AuthenticationManager authManager;
     private final JwtService jwtService;
-    private final MailService mailService;
 
     @Transactional
     public ResponseEntity<Response> postHospital(HospitalDTO hospitalDTO){
@@ -71,13 +70,13 @@ public class AuthService {
         Token savedToken = tokenService.saveToken(token, adminUser);
         System.out.println(token);// Save token
         //ToDo: send mail below
-        mailService.sendEmailVerificationMail(adminUser, savedToken.getValue());
+        mailService.sendEmailVerificationMail(adminUser, token);
 
         //response
         Response response = new Response(true, "Signed up. Check mailbox to verify email quickly.", null);
         return ResponseEntity.status(201).body(response);
     }
-    
+
     @Transactional
     public void clientSignup(UserDTO userDTO) throws Exception {
         User user = Mapper.mapper.mapToUser(userDTO);
@@ -91,10 +90,11 @@ public class AuthService {
         mailService.sendEmailVerificationMail(user, savedToken.getValue());
     }
 
-    public void verifyEmail(int value){
+    public void emailVerification(int value){
         Token token = tokenRepository.findByValue(value).get();
         User user = token.getUser();
         user.setEnabled(true);
+        userRepository.save(user);
     }
 
     public String login(LoginDTO loginDTO) {
