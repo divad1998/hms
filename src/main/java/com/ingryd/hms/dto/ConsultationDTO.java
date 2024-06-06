@@ -28,11 +28,9 @@ public class ConsultationDTO {
     @Length(max = 500, message = "Preliminary diagnosis cannot exceed 500 characters.")
     private String preliminary_diagnosis;
 
-    @NotBlank(message = "Tests to be ran can't be blank.")
     @Length(max = 1000, message = "Tests to be ran can't exceed 1000 characters.")
     private String testsToRun;
 
-    @NotBlank(message = "Prescription can't be blank.")
     @Length(max = 5000, message = "Prescription can't exceed 5000 characters.")
     private String prescription;
 
@@ -41,7 +39,6 @@ public class ConsultationDTO {
     @Length(max = 500, message = "Diagnosis cannot exceed 500 characters.")
     private String diagnosis;
 
-    @NotBlank(message = "The Referred can't be blank.")
     @Length(max = 1000, message = "The Referred can't exceed 1000 characters.")
     private String referredTo;
 

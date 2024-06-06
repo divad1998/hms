@@ -7,6 +7,7 @@ import com.ingryd.hms.exception.InternalServerException;
 import com.ingryd.hms.repository.*;
 //import com.ingryd.hms.repository.HospitalClientRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -89,11 +90,22 @@ public class AppointmentService {
                 .build();
 
         appointmentRepository.save(appointment);
-
         //ToDo: send in-app notifications to consultants
         //build response
         Response response = new Response();
         response.setMessage("Appointment requested successfully.");
         return new ResponseEntity<>(response, HttpStatus.CREATED);
+    }
+
+    public ResponseEntity<Response> acceptAppointment(Long appointmentId, boolean accepted) {
+        //Test cases:
+        //Role = Patient
+        //valid appointment (via id, hospital patient id and hospital_id) (staff hospital too)
+        //appointment musn't have been confirmed, accepted musn't be true, cancelled musn't be true
+        //specialty must be valid
+        //patient shouldn't have another accepted appointment with a diff hospital at same time and date
+        //the consultant shouldn't have another confirmed appointment at the same time and date
+
+        //then, accept.
     }
 }

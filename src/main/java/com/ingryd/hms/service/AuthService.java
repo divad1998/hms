@@ -150,12 +150,15 @@ public class AuthService {
         staff.setHospital(hospital);
         staffRepository.save(staff);
 
-        //ToDo: send verification mail to staff's email
+        //Token Service
+        int token = tokenService.generateToken();
+        tokenService.saveToken(token, user);
+        mailService.sendEmailVerificationMail(user, token);
 
         //build response
         Response response = new Response();
         response.setStatus(true);
-        response.setMessage("Staff created successfully. Email verification sent to staff's mailbox.");
+        response.setMessage("Staff created successfully. Verification mail is on its way to staff's mailbox.");
         response.setData(null);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
