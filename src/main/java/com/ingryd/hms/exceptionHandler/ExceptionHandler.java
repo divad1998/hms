@@ -1,6 +1,7 @@
 package com.ingryd.hms.exceptionHandler;
 
 import com.ingryd.hms.dto.Response;
+import com.ingryd.hms.exception.InternalServerException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -26,7 +27,7 @@ public class ExceptionHandler {
 
     @org.springframework.web.bind.annotation.ExceptionHandler(SQLIntegrityConstraintViolationException.class)
     public ResponseEntity<Response> handle(SQLIntegrityConstraintViolationException e) {
-        String msg = "Either the email or phone number has being registered already.";
+        String msg = "Either the email|phone number|website|hfrn|hospital name (if present) has been registered already.";
         return ResponseEntity.status(422).body(new Response(false, msg, null));
     }
 
@@ -38,5 +39,20 @@ public class ExceptionHandler {
     @org.springframework.web.bind.annotation.ExceptionHandler(AuthenticationException.class)
     public ResponseEntity<Response> handle(AuthenticationException e) {
         return ResponseEntity.status(400).body(new Response(false, e.getMessage(), null));
+    }
+
+    @org.springframework.web.bind.annotation.ExceptionHandler(InternalServerException.class)
+    public ResponseEntity<Response> handle(InternalServerException e) {
+        return ResponseEntity.status(500).body(new Response(false, e.getMessage(), null));
+    }
+
+    @org.springframework.web.bind.annotation.ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<Response> handle(IllegalArgumentException e) {
+        return ResponseEntity.status(422).body(new Response(false, e.getMessage(), null));
+    }
+
+    @org.springframework.web.bind.annotation.ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<Response> handle(IllegalStateException e) {
+        return ResponseEntity.status(422).body(new Response(false, e.getMessage(), null));
     }
 }

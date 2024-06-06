@@ -1,9 +1,11 @@
 package com.ingryd.hms.service;
 
+import com.ingryd.hms.dto.Response;
 import com.ingryd.hms.dto.StaffDTO;
 import com.ingryd.hms.entity.Hospital;
 import com.ingryd.hms.entity.Staff;
 import com.ingryd.hms.entity.User;
+import com.ingryd.hms.enums.Profession;
 import com.ingryd.hms.enums.Role;
 import com.ingryd.hms.repository.HospitalRepository;
 import com.ingryd.hms.repository.StaffRepository;
@@ -16,22 +18,17 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class StaffService {
-
     private final StaffRepository staffRepository;
-
     private final UserRepository userRepository;
-
     private final HospitalRepository hospitalRepository;
-
     private final PasswordEncoder passwordEncoder;
-
     private final MailService mailService;
-
     private final TokenService tokenService;
 
     public boolean isAdminUser() {
@@ -45,57 +42,20 @@ public class StaffService {
             return false;
         }
     }
-    public ResponseEntity<Staff> createStaff(StaffDTO staffDTO) {
-        if (!isAdminUser()) {
-            throw new RuntimeException("Only admins can create staff members.");
-        }
+  
+    public List<Staff> getConsultantsBySpecialty(String specialty) {
+        return staffRepository.findBySpecialtyAndProfession(specialty, Profession.MEDICAL_DOCTOR);
+    }
 
-        Optional<Hospital> OptionalHospital = hospitalRepository.findById(staffDTO.getHospitalId());
-        if (!OptionalHospital.isPresent()) {
-            throw new RuntimeException("Hospital not found");
-        }
-        Hospital hospital = OptionalHospital.get();
+    public Staff getConsultantById(Long id) {
+        return staffRepository.findByIdAndProfession(id, Profession.MEDICAL_DOCTOR);
+    }
 
-        Optional<User> existingUser = userRepository.findById(staffDTO.getUserId());
-        User user;
-        if (existingUser.isPresent()) {
-            user = existingUser.get();
-        } else {
+    public List<Staff> getAllConsultantsOfAHospital(Long hospitalId) {
+        return staffRepository.findByHospital_Id(hospitalId);
+    }
 
-            user = new User();
-            user.setId(staffDTO.getUserId());
-            user.setEmail(staffDTO.getEmail());
-            user.setFirstName(staffDTO.getFirstName());
-            user.setLastName(staffDTO.getLastName());
-            user.setMiddleName(staffDTO.getMiddleName());
-            user.setPhoneNumber(staffDTO.getPhoneNumber());
-            user.setRole(staffDTO.getRole());
-            user.setContactAddress(staffDTO.getContactAddress());
-            user.setPassword(passwordEncoder.encode(staffDTO.getPassword()));
-
-            userRepository.save(user);
-        }
-
-        Staff staff = new Staff();
-        staff.setFirstName(staffDTO.getFirstName());
-        staff.setMiddleName(staffDTO.getMiddleName());
-        staff.setLastName(staffDTO.getLastName());
-        staff.setPhoneNumber(staffDTO.getPhoneNumber());
-        staff.setEmail(staffDTO.getEmail());
-        staff.setRole(staffDTO.getRole());
-        staff.setSpecialty(staffDTO.getSpecialty());
-        staff.setLevel(staffDTO.getLevel());
-        staff.setQualifications(staffDTO.getQualifications());
-        staff.setUser(user);
-        staff.setHospital(hospital);
-
-        Staff savedStaff = staffRepository.save(staff);
-
-        //Token Service
-        int token = tokenService.generateToken();
-        tokenService.saveToken(token, user);
-        mailService.sendEmailVerificationMail(user, token);
-
-        return new ResponseEntity<>(savedStaff, HttpStatus.CREATED);
+    public Staff getStaffByUserId(Long userId) {
+        return staffRepository.findByUser_Id(userId);
     }
 }

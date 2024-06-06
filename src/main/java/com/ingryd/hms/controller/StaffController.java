@@ -1,5 +1,6 @@
 package com.ingryd.hms.controller;
 
+import com.ingryd.hms.dto.Response;
 import com.ingryd.hms.dto.StaffDTO;
 import com.ingryd.hms.entity.Staff;
 import com.ingryd.hms.service.StaffService;
@@ -16,10 +17,5 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class StaffController {
 
-    private final StaffService staffService;
 
-    @PostMapping("create")
-    public ResponseEntity<Staff> createStaff(@RequestBody @Valid StaffDTO staffDTO){
-        return staffService.createStaff(staffDTO);
-    }
 }
