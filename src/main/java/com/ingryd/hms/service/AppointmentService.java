@@ -9,7 +9,6 @@ import com.ingryd.hms.dto.Response;
 import com.ingryd.hms.entity.*;
 import com.ingryd.hms.exception.InternalServerException;
 import com.ingryd.hms.repository.*;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -38,7 +37,6 @@ public class AppointmentService {
     public ResponseEntity<Appointment> findById(long id){
         return new ResponseEntity<>(appointmentRepository.findById(id).get(), HttpStatus.OK);
     }
-
     public ResponseEntity<Response> bookAppointment(AppointmentDTO appointmentDTO, Long hospitalId) throws InternalServerException {
         //hospital validation
         Hospital hospital = hospitalService.validateHospital(hospitalId);

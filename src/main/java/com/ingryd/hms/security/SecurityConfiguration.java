@@ -34,8 +34,7 @@ public class SecurityConfiguration {
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .httpBasic(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(requestRegistry -> requestRegistry                  
-
+                .authorizeHttpRequests(requestRegistry -> requestRegistry
                         .requestMatchers(HttpMethod.POST, "/auth/patients/signup").permitAll()
                         .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/auth/hospitals/signup").permitAll()
@@ -45,6 +44,8 @@ public class SecurityConfiguration {
                         .requestMatchers(HttpMethod.POST, "/hospitals/{id}/patient-registration").hasAuthority(Role.PATIENT.name())
                         .requestMatchers(HttpMethod.POST, "/appointments/{hospitalId}/request").hasAuthority(Role.PATIENT.name())
                         .requestMatchers(HttpMethod.POST, "/consultations").hasAnyAuthority(Role.CONSULTANT.name())
+                        .requestMatchers(HttpMethod.POST, "/consultants/consultant-specialties").hasAuthority(Role.PATIENT.name())
+                        .requestMatchers(HttpMethod.POST, "consultants").hasAuthority(Role.PATIENT.name())
                         .anyRequest().authenticated())
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 

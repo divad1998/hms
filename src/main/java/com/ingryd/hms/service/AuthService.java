@@ -1,13 +1,13 @@
 package com.ingryd.hms.service;
 
-import com.ingryd.hms.dto.*;
+import com.ingryd.hms.dto.HospitalDTO;
+import com.ingryd.hms.dto.LoginDTO;
+import com.ingryd.hms.dto.Response;
+import com.ingryd.hms.dto.UserDTO;
 import com.ingryd.hms.entity.Hospital;
-import com.ingryd.hms.entity.Staff;
 import com.ingryd.hms.entity.Token;
 import com.ingryd.hms.entity.User;
-import com.ingryd.hms.enums.Profession;
 import com.ingryd.hms.enums.Role;
-import com.ingryd.hms.exception.InternalServerException;
 import com.ingryd.hms.mapper.Mapper;
 import com.ingryd.hms.repository.StaffRepository;
 import com.ingryd.hms.repository.TokenRepository;
@@ -16,11 +16,6 @@ import com.ingryd.hms.repository.UserRepository;
 import com.ingryd.hms.security.JwtService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-
-import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -30,11 +25,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class AuthService {
 
     private final HospitalRepository hospitalRepository;
@@ -78,6 +70,7 @@ public class AuthService {
         //generate token and send verification mail
         int token = tokenService.generateToken();
         Token savedToken = tokenService.saveToken(token, adminUser);
+        System.out.println(token);// Save token
         //ToDo: send mail below
         mailService.sendEmailVerificationMail(adminUser, token);
 
@@ -87,13 +80,14 @@ public class AuthService {
     }
 
     @Transactional
-    public void patientSignup(UserDTO userDTO) throws Exception {
+    public void clientSignup(UserDTO userDTO) throws Exception {
         User user = Mapper.mapper.mapToUser(userDTO);
         user.setPassword(userDTO.getPassword()); // Set password from DTO
         user.setRole(Role.PATIENT);
         user = userRepository.save(user);
         int token = tokenService.generateToken();
         Token savedToken = tokenService.saveToken(token, user);
+        System.out.println(token);// Save token
         //send verification mail
         mailService.sendEmailVerificationMail(user, savedToken.getValue());
     }
@@ -123,43 +117,6 @@ public class AuthService {
 
     public void logout(String authToken){
         jwtService.invalidateToken(authToken);
-    }
-
-    @Transactional
-    public ResponseEntity<Response> createStaff(StaffDTO staffDTO) throws InternalServerException {
-        //create user
-        User user = Mapper.mapper.mapToUser(staffDTO);
-        if (staffDTO.getProfession().equals(Profession.MEDICAL_DOCTOR))
-            user.setRole(Role.CONSULTANT);
-        if (staffDTO.getProfession().equals(Profession.PHARMACIST))
-            user.setRole(Role.PHARMACIST);
-        if (staffDTO.getProfession().equals(Profession.LABORATORY_SCIENTIST))
-            user.setRole(Role.LAB_SCIENTIST);
-
-        User savedUser = userRepository.save(user);
-
-        //create staff
-        Staff staff = Mapper.mapper.mapToStaff(staffDTO);
-        staff.setUser(savedUser);
-        //get hospital and set on staff
-        User admin = getAuthUser();
-        Hospital hospital = hospitalRepository.findByEmail(admin.getEmail());
-        if (hospital == null) {
-            Logger logger = LoggerFactory.getLogger(this.getClass());
-            logger.error("Admin with email: " + admin.getEmail() + " not related with any hospital.");
-            throw new InternalServerException("Internal server error. Kindly reach out to support.");
-        }
-        staff.setHospital(hospital);
-        staffRepository.save(staff);
-
-        //ToDo: send verification mail to staff's email
-
-        //build response
-        Response response = new Response();
-        response.setStatus(true);
-        response.setMessage("Staff created successfully. Email verification sent to staff's mailbox.");
-        response.setData(null);
-        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
     /**
