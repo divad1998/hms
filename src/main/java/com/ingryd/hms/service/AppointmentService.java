@@ -1,5 +1,6 @@
 package com.ingryd.hms.service;
 
+import com.ingryd.hms.controller.AppointmentController;
 import com.ingryd.hms.entity.Appointment;
 import com.ingryd.hms.exception.InvalidException;
 import com.ingryd.hms.repository.AppointmentRepository;
@@ -106,8 +107,7 @@ public class AppointmentService {
 
     public void acceptAppointment(Long hospitalId, Long appointmentId) throws InvalidException, InternalServerException {
         //validate appointment
-        User authUser = authService.getAuthUser();
-        HospitalPatient hospitalPatient = hospitalPatientService.getHospitalPatient(authUser.getId(), hospitalId);
+        HospitalPatient hospitalPatient = getPatientFromAuthUser(hospitalId);
         Appointment appointment = validateAppointment(appointmentId, hospitalPatient.getId(), hospitalPatient.getHospital().getId());
         if (appointment.getPreferredDate() == null)
             throw new InvalidException("Error. Appointment has no date.");
@@ -145,6 +145,14 @@ public class AppointmentService {
         return new ResponseEntity<>(appointmentRepository.findById(id).get(), HttpStatus.OK);
     }
 
+    /**
+     * Checks whether Appointment is valid for the hospital patient at the hospital.
+     * @param appointmentId
+     * @param hospitalPatientId
+     * @param hospital_Id
+     * @return
+     * @throws InvalidException
+     */
     private Appointment validateAppointment(Long appointmentId, Long hospitalPatientId, Long hospital_Id) throws InvalidException {
         Appointment appointment = appointmentRepository.findByIdAndHospitalPatient_idAndHospital_id(appointmentId, hospitalPatientId, hospital_Id);
         if (appointment==null)
@@ -160,5 +168,26 @@ public class AppointmentService {
                 throw new InternalServerException("Server error. Kindly contact support.");
             }
         }
+    }
+
+    /**
+     * handles a patient's cancellation of an appointment.
+     */
+    public void cancelAppointment(Long hospital_id, Long appointment_Id) throws InvalidException {
+        //Test Cases:
+        //Patient role; valid appointment; already cancelled, response
+        //validate appointment
+        HospitalPatient hospitalPatient = getPatientFromAuthUser(hospital_id);
+        Appointment appointment = validateAppointment(appointment_Id, hospitalPatient.getId(), hospitalPatient.getHospital().getId());
+        if (appointment.isCancelled())
+            throw new InvalidException("Error. Appointment is already cancelled.");
+        //cancel appointment
+        appointment.setCancelled(true);
+        appointmentRepository.save(appointment);
+    }
+
+    private HospitalPatient getPatientFromAuthUser(Long hospital_id) throws InvalidException {
+        User authUser = authService.getAuthUser();
+        return hospitalPatientService.getHospitalPatient(authUser.getId(), hospital_id);
     }
 }

@@ -21,9 +21,17 @@ public class AppointmentController {
         return appointmentService.bookAppointment(appointmentDTO, hospital_Id);
     }
 
-    @PostMapping("{hospital_Id}/{appointment_Id}/accept")
+    @PatchMapping("{hospital_Id}/{appointment_Id}/accept")
     public ResponseEntity<Response> acceptAppointment(@PathVariable Long hospital_Id, @PathVariable Long appointment_Id) throws InternalServerException, InvalidException {
         appointmentService.acceptAppointment(hospital_Id, appointment_Id);
         return ResponseEntity.ok(new Response(true, "Appointment accepted. Consultant will be notified.", null));
+    }
+
+    @PatchMapping("{hospital_Id}/{appointment_Id}/cancel")
+    public ResponseEntity<Response> cancelAppointment(@PathVariable Long hospital_Id, @PathVariable Long appointment_Id) throws InvalidException {
+        appointmentService.cancelAppointment(hospital_Id, appointment_Id);
+        Response response = new Response(true, "Appointment cancelled successfully.", null);
+        return ResponseEntity.ok(response);
+
     }
 }
