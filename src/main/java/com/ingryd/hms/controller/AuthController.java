@@ -13,6 +13,9 @@ import com.ingryd.hms.dto.UserDTO;
 
 import com.ingryd.hms.dto.HospitalDTO;
 
+import com.ingryd.hms.exception.InternalServerException;
+import jakarta.servlet.http.HttpServletRequest;
+
 import jakarta.validation.Valid;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
@@ -24,9 +27,11 @@ import java.util.Optional;
 
 @RestController
 @AllArgsConstructor
+@RequestMapping("auth")
 public class AuthController {
     @Autowired
-    private final AuthService authService;
+    private AuthService authService;
+
     @Autowired
     private PasswordService passwordService;
 
@@ -37,8 +42,8 @@ public class AuthController {
 
     @PostMapping("/patients/signup")
     @ResponseStatus(code = HttpStatus.CREATED)
-    public ResponseEntity<?> clientSignup(@RequestBody @Valid UserDTO userDTO) throws Exception {
-        authService.clientSignup(userDTO);
+    public ResponseEntity<?> patientSignup(@RequestBody @Valid UserDTO userDTO) throws Exception {
+        authService.patientSignup(userDTO);
         //build response on success
         Response response = new Response(true, "Signed up. Check mailbox to verify email quickly.", null);
         Link loginLink = WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(this.getClass()).login(null)).withRel("login");
@@ -69,9 +74,12 @@ public class AuthController {
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<?> logout(@RequestHeader ("Authorization") String authToken){
-        authService.logout(authToken);
-        Response response = new Response (true, "logout successful", null);
+    public ResponseEntity<?> logout(@RequestHeader ("Authorization") String authToken, HttpServletRequest request){
+        //get actual token
+        String jwtToken = authToken.substring(7);
+
+        authService.logout(jwtToken);
+        Response response = new Response (true, "logout successful.", null);
         return ResponseEntity.ok(response);
     }
   
@@ -85,5 +93,10 @@ public class AuthController {
     public ResponseEntity<?> resetPassword(@PathVariable @Valid PasswordDTO dto){
         passwordService.resetPassword(dto);
         return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/staff/signup")
+    public ResponseEntity<Response> createStaff(@RequestBody @Valid StaffDTO staffDTO) throws InternalServerException {
+        return authService.createStaff(staffDTO);
     }
 }
