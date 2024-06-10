@@ -22,8 +22,8 @@ public class AppointmentController {
     }
 
     @PostMapping("{hospital_Id}/{appointment_Id}/accept")
-    public ResponseEntity<Response> acceptAppointment(@PathVariable Long hospital_Id, @PathVariable Long appointment_Id, @RequestParam("accepted") boolean accepted) throws InternalServerException, InvalidException {
-        appointmentService.acceptAppointment(hospital_Id, appointment_Id, accepted);
+    public ResponseEntity<Response> acceptAppointment(@PathVariable Long hospital_Id, @PathVariable Long appointment_Id) throws InternalServerException, InvalidException {
+        appointmentService.acceptAppointment(hospital_Id, appointment_Id);
         return ResponseEntity.ok(new Response(true, "Appointment accepted. Consultant will be notified.", null));
     }
 }

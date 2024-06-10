@@ -56,6 +56,7 @@ public class AppointmentService {
 //            if (confirmedAppointmentExists)
 //                throw new IllegalArgumentException("Sorry. Selected Date and Time already taken.");
 //        }
+        //ToDo: has preferred_date passed?
 
         //does hospital have consultants?
         List<Staff> consultants = staffService.getAllConsultantsOfAHospital(hospital.getId());
@@ -103,7 +104,7 @@ public class AppointmentService {
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
-    public void acceptAppointment(Long hospitalId, Long appointmentId, boolean accepted) throws InvalidException, InternalServerException {
+    public void acceptAppointment(Long hospitalId, Long appointmentId) throws InvalidException, InternalServerException {
         //validate appointment
         User authUser = authService.getAuthUser();
         HospitalPatient hospitalPatient = hospitalPatientService.getHospitalPatient(authUser.getId(), hospitalId);
@@ -117,9 +118,13 @@ public class AppointmentService {
 
         Staff consultant = appointment.getStaff();
         if (consultant != null) {
-            Appointment existingAppointment = appointmentRepository.findByStaff_idAndPreferredDateAndPreferredTime(consultant.getId(), appointment.getPreferredDate(), appointment.getPreferredTime());
-           if (existingAppointment != null && existingAppointment.isConfirmed()) {
-                throw new InvalidException("Consultant already has an Appointment scheduled for that date.");
+            List<Appointment> existingAppointments = appointmentRepository.findByStaff_idAndPreferredDateAndPreferredTime(consultant.getId(), appointment.getPreferredDate(), appointment.getPreferredTime());
+           if (!existingAppointments.isEmpty()) {
+               for (Appointment appt : existingAppointments) {
+                   if (appt.isConfirmed()) {
+                       throw new InvalidException("Consultant already has an Appointment scheduled for that date.");
+                   }
+               }
            }
         } else {
             throw new InvalidException("Error. No Consultant specified in Appointment.");

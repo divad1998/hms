@@ -1,5 +1,6 @@
 package com.ingryd.hms.controller;
 import com.ingryd.hms.dto.*;
+import com.ingryd.hms.exception.InternalServerException;
 import com.ingryd.hms.service.AuthService;
 import com.ingryd.hms.service.PasswordService;
 import lombok.AllArgsConstructor;
@@ -29,7 +30,7 @@ import java.util.Map;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("auth")
+@RequestMapping("/auth")
 public class AuthController {
     @Autowired
     private AuthService authService;
@@ -90,5 +91,10 @@ public class AuthController {
     public ResponseEntity<?> resetPassword(@PathVariable @Valid PasswordDTO dto){
         passwordService.resetPassword(dto);
         return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/staff/signup")
+    public ResponseEntity<Response> staffSignup(@RequestBody @Valid StaffDTO staffDTO) throws InternalServerException {
+        return authService.createStaff(staffDTO);
     }
 }
