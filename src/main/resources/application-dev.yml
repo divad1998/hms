@@ -11,7 +11,7 @@ spring:
         physical-strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
       ddl-auto: update
   datasource:
-    url: jdbc:mysql://localhost:3306/hms-dev
+    url: jdbc:mysql://localhost:3306/hms_dev
     username: root
     password:
   mail:
@@ -30,10 +30,9 @@ spring:
           ssl:
             enable: true
             required: true
-
-#hms:
-#  jwt:
-#    secret_key: 5367566B59703373357638792F423F4528482B4D6251655468576D5A71347437
+hms:
+  jwt:
+    secret_key: 5367566B59703373357638792F423F4528482B4D6251655468576D5A71347437
 
 server:
   servlet:

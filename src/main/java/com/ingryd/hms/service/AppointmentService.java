@@ -1,5 +1,13 @@
 package com.ingryd.hms.service;
 
+import com.ingryd.hms.entity.Appointment;
+import com.ingryd.hms.exception.InvalidException;
+import com.ingryd.hms.repository.AppointmentRepository;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import com.ingryd.hms.dto.AppointmentDTO;
 import com.ingryd.hms.dto.Response;
 import com.ingryd.hms.entity.*;
@@ -12,6 +20,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
+import java.util.List;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -21,41 +31,37 @@ import java.util.function.Consumer;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AppointmentService {
-
     private final AppointmentRepository appointmentRepository;
-    private final HospitalPatientRepository hospitalPatientRepository;
-    private final StaffRepository staffRepository;
-    private final HospitalRepository hospitalRepository;
     private final HospitalService hospitalService;
     private final AuthService authService;
     private final StaffService staffService;
+    private final HospitalPatientService hospitalPatientService;
 
-    public ResponseEntity<Response> bookAppointment(AppointmentDTO appointmentDTO, Long hospitalId) throws InternalServerException {
+    public ResponseEntity<Response> bookAppointment(AppointmentDTO appointmentDTO, Long hospitalId) throws InternalServerException, InvalidException {
         //hospital validation
         Hospital hospital = hospitalService.validateHospital(hospitalId);
         //is patient registered with hospital?
         User authUser = authService.getAuthUser();
-        HospitalPatient hospitalPatient = hospitalPatientRepository.findByUser_IdAndHospital_Id(authUser.getId(), hospital.getId());
-        if (hospitalPatient == null)
-            throw new IllegalArgumentException("You aren't registered with the given hospital.");
-
+        HospitalPatient hospitalPatient = hospitalPatientService.getHospitalPatient(authUser.getId(), hospital.getId());
         //validate date and time
         LocalDate preferredDate = appointmentDTO.getPreferredDate();
         LocalTime preferredTime = appointmentDTO.getPreferredTime();
         if (preferredTime != null && preferredDate == null)
             throw new IllegalArgumentException("Time selected but Date is null.");
-        if (preferredDate != null && preferredTime != null) {
-            boolean confirmedAppointmentExists = appointmentRepository.findByPreferredDateAndPreferredTime(preferredDate, preferredTime).isConfirmed();
-            if (confirmedAppointmentExists)
-                throw new IllegalArgumentException("Sorry. Selected Date and Time already taken.");
-        }
+        //ToDo: fix this
+        //        if (preferredDate != null && preferredTime != null) {
+//            boolean confirmedAppointmentExists = appointmentRepository.findByPreferredDateAndPreferredTime(preferredDate, preferredTime).isConfirmed();
+//            if (confirmedAppointmentExists)
+//                throw new IllegalArgumentException("Sorry. Selected Date and Time already taken.");
+//        }
 
         //does hospital have consultants?
         List<Staff> consultants = staffService.getAllConsultantsOfAHospital(hospital.getId());
         long enabledConsultantCount = consultants.stream()
-                                                .filter(consultant -> consultant.getUser().isEnabled())
-                                                .count();
+                .filter(consultant -> consultant.getUser().isEnabled())
+                .count();
 
         if (enabledConsultantCount == 0)
             throw new IllegalArgumentException("Couldn't find any consultants in the hospital who are currently fully registered on this platform."); //ToDo: refactor exception type?
@@ -84,7 +90,7 @@ public class AppointmentService {
                 .preferredTime(appointmentDTO.getPreferredTime())
                 .hospitalPatient(hospitalPatient)
                 .consultantSpecialty(appointmentDTO.getConsultantSpecialty())
-                .desiredConsultant(consultant)
+                .staff(consultant)
                 .acceptedByPatient(true)
                 .hospital(hospital)
                 .build();
@@ -97,15 +103,57 @@ public class AppointmentService {
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
-    public ResponseEntity<Response> acceptAppointment(Long appointmentId, boolean accepted) {
-        //Test cases:
-        //Role = Patient
-        //valid appointment (via id, hospital patient id and hospital_id) (staff hospital too)
-        //appointment musn't have been confirmed, accepted musn't be true, cancelled musn't be true
-        //specialty must be valid
-        //patient shouldn't have another accepted appointment with a diff hospital at same time and date
-        //the consultant shouldn't have another confirmed appointment at the same time and date
+    public void acceptAppointment(Long hospitalId, Long appointmentId, boolean accepted) throws InvalidException, InternalServerException {
+        //validate appointment
+        User authUser = authService.getAuthUser();
+        HospitalPatient hospitalPatient = hospitalPatientService.getHospitalPatient(authUser.getId(), hospitalId);
+        Appointment appointment = validateAppointment(appointmentId, hospitalPatient.getId(), hospitalPatient.getHospital().getId());
+        if (appointment.getPreferredDate() == null)
+            throw new InvalidException("Error. Appointment has no date.");
+        if (appointment.isAcceptedByPatient() || appointment.isConfirmed() || appointment.isCancelled())
+            throw new InvalidException("Error. Appointment has either been accepted previously, confirmed, or cancelled. ");
+        String specialty = appointment.getConsultantSpecialty();
+        validateSpecialtyInAppointment(specialty, hospitalPatient.getHospital().getId());
 
-        //then, accept.
+        Staff consultant = appointment.getStaff();
+        if (consultant != null) {
+            Appointment existingAppointment = appointmentRepository.findByStaff_idAndPreferredDateAndPreferredTime(consultant.getId(), appointment.getPreferredDate(), appointment.getPreferredTime());
+           if (existingAppointment != null && existingAppointment.isConfirmed()) {
+                throw new InvalidException("Consultant already has an Appointment scheduled for that date.");
+           }
+        } else {
+            throw new InvalidException("Error. No Consultant specified in Appointment.");
+        }
+
+        //accept
+        appointment.setAcceptedByPatient(true);
+        appointmentRepository.save(appointment);
+
+        //ToDo: send in-app notif to Related consultant
+        }
+
+    public ResponseEntity<List<Appointment>> getAllAppointment(){
+        return new ResponseEntity<>(appointmentRepository.findAll(), HttpStatus.OK);
+    }
+
+    public ResponseEntity<Appointment> findById(long id){
+        return new ResponseEntity<>(appointmentRepository.findById(id).get(), HttpStatus.OK);
+    }
+
+    private Appointment validateAppointment(Long appointmentId, Long hospitalPatientId, Long hospital_Id) throws InvalidException {
+        Appointment appointment = appointmentRepository.findByIdAndHospitalPatient_idAndHospital_id(appointmentId, hospitalPatientId, hospital_Id);
+        if (appointment==null)
+            throw new InvalidException("Invalid Appointment.");
+        return appointment;
+    }
+
+    private void validateSpecialtyInAppointment(String specialty, Long hospital_Id) throws InternalServerException {
+        if (specialty != null) {
+            boolean validSpecialty = staffService.getAllConsultantSpecialties(hospital_Id).contains(specialty.toLowerCase());
+            if (!validSpecialty) {
+                log.error("Consultant specialty in Appointment is invalid.");
+                throw new InternalServerException("Server error. Kindly contact support.");
+            }
+        }
     }
 }

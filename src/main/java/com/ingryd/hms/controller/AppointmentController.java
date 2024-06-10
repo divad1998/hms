@@ -3,6 +3,7 @@ package com.ingryd.hms.controller;
 import com.ingryd.hms.dto.AppointmentDTO;
 import com.ingryd.hms.dto.Response;
 import com.ingryd.hms.exception.InternalServerException;
+import com.ingryd.hms.exception.InvalidException;
 import com.ingryd.hms.service.AppointmentService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -15,13 +16,14 @@ import org.springframework.web.bind.annotation.*;
 public class AppointmentController {
     private final AppointmentService appointmentService;
 
-    @PostMapping("/{hospitalId}/request")
-    public ResponseEntity<Response> bookAppointment(@RequestBody @Valid AppointmentDTO appointmentDTO, @PathVariable Long hospitalId) throws InternalServerException {
-        return appointmentService.bookAppointment(appointmentDTO, hospitalId);
+    @PostMapping("/{hospital_Id}/request")
+    public ResponseEntity<Response> bookAppointment(@RequestBody @Valid AppointmentDTO appointmentDTO, @PathVariable Long hospital_Id) throws InternalServerException, InvalidException {
+        return appointmentService.bookAppointment(appointmentDTO, hospital_Id);
     }
 
-    @PostMapping("{appointment_Id}/accept")
-    public ResponseEntity<Response> acceptAppointment(@PathVariable Long appointment_Id, @RequestParam("accepted") boolean accepted) {
-        return appointmentService.acceptAppointment(appointment_Id, accepted);
+    @PostMapping("{hospital_Id}/{appointment_Id}/accept")
+    public ResponseEntity<Response> acceptAppointment(@PathVariable Long hospital_Id, @PathVariable Long appointment_Id, @RequestParam("accepted") boolean accepted) throws InternalServerException, InvalidException {
+        appointmentService.acceptAppointment(hospital_Id, appointment_Id, accepted);
+        return ResponseEntity.ok(new Response(true, "Appointment accepted. Consultant will be notified.", null));
     }
 }

@@ -40,7 +40,7 @@ public class Appointment {
 
     @ManyToOne
     @JoinColumn(name = "desired_staff_id")
-    private Staff desiredConsultant;
+    private Staff staff;
 
     private boolean confirmed;
     private boolean acceptedByPatient;
