@@ -137,7 +137,6 @@ public class HospitalService {
      * @param hmo_number
      */
     public void registerPatientWithHMO(Long hospital_id, String hmo_number) throws InternalServerException {
-        //test cases:
         //ToDo: get patient's details from HMO;
         Hospital hospital = validateHospital(hospital_id);
         //is patient already registered?
