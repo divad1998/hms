@@ -6,6 +6,7 @@ import com.ingryd.hms.exception.InvalidException;
 import com.ingryd.hms.repository.AppointmentRepository;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import org.mapstruct.control.MappingControl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,12 +41,12 @@ public class AppointmentService {
     private final StaffService staffService;
     private final HospitalPatientService hospitalPatientService;
 
-    public ResponseEntity<Response> bookAppointment(AppointmentDTO appointmentDTO, Long hospitalId) throws InternalServerException, InvalidException {
+    public ResponseEntity<Response> bookAppointment(AppointmentDTO appointmentDTO, Long hospitalId, Long hospitalPatient_id) throws InternalServerException, InvalidException {
         //hospital validation
         Hospital hospital = hospitalService.validateHospital(hospitalId);
         //is patient registered with hospital?
         User authUser = authService.getAuthUser();
-        HospitalPatient hospitalPatient = hospitalPatientService.getHospitalPatient(authUser.getId(), hospital.getId());
+        HospitalPatient hospitalPatient = hospitalPatientService.getHospitalPatient(authUser.getId(), hospitalPatient_id, hospital.getId());
         //validate date and time
         LocalDate preferredDate = appointmentDTO.getPreferredDate();
         LocalTime preferredTime = appointmentDTO.getPreferredTime();
@@ -105,9 +106,10 @@ public class AppointmentService {
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
-    public void acceptAppointment(Long hospitalId, Long appointmentId) throws InvalidException, InternalServerException {
+    public void acceptAppointment(Long hospitalId, Long hospital_patient_id, Long appointmentId) throws InvalidException, InternalServerException {
         //validate appointment
-        HospitalPatient hospitalPatient = getPatientFromAuthUser(hospitalId);
+        User authUser = authService.getAuthUser();
+        HospitalPatient hospitalPatient = hospitalPatientService.getHospitalPatient(authUser.getId(), hospital_patient_id, hospitalId);
         Appointment appointment = validateAppointment(appointmentId, hospitalPatient.getId(), hospitalPatient.getHospital().getId());
         if (appointment.getPreferredDate() == null)
             throw new InvalidException("Error. Appointment has no date.");
@@ -173,21 +175,15 @@ public class AppointmentService {
     /**
      * handles a patient's cancellation of an appointment.
      */
-    public void cancelAppointment(Long hospital_id, Long appointment_Id) throws InvalidException {
-        //Test Cases:
-        //Patient role; valid appointment; already cancelled, response
+    public void cancelAppointment(Long hospital_id, Long hospital_patient_id, Long appointment_Id) throws InvalidException {
         //validate appointment
-        HospitalPatient hospitalPatient = getPatientFromAuthUser(hospital_id);
+        User authUser = authService.getAuthUser();
+        HospitalPatient hospitalPatient = hospitalPatientService.getHospitalPatient(authUser.getId(), hospital_patient_id, hospital_id);
         Appointment appointment = validateAppointment(appointment_Id, hospitalPatient.getId(), hospitalPatient.getHospital().getId());
         if (appointment.isCancelled())
             throw new InvalidException("Error. Appointment is already cancelled.");
         //cancel appointment
         appointment.setCancelled(true);
         appointmentRepository.save(appointment);
-    }
-
-    private HospitalPatient getPatientFromAuthUser(Long hospital_id) throws InvalidException {
-        User authUser = authService.getAuthUser();
-        return hospitalPatientService.getHospitalPatient(authUser.getId(), hospital_id);
     }
 }

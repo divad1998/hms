@@ -16,20 +16,20 @@ import org.springframework.web.bind.annotation.*;
 public class AppointmentController {
     private final AppointmentService appointmentService;
 
-    @PostMapping("/{hospital_Id}/request")
-    public ResponseEntity<Response> bookAppointment(@RequestBody @Valid AppointmentDTO appointmentDTO, @PathVariable Long hospital_Id) throws InternalServerException, InvalidException {
-        return appointmentService.bookAppointment(appointmentDTO, hospital_Id);
+    @PostMapping("/{hospital_Id}/{hospital_patient_id}/request")
+    public ResponseEntity<Response> bookAppointment(@RequestBody @Valid AppointmentDTO appointmentDTO, @PathVariable Long hospital_Id, @PathVariable Long hospital_patient_id) throws InternalServerException, InvalidException {
+        return appointmentService.bookAppointment(appointmentDTO, hospital_Id, hospital_patient_id);
     }
 
-    @PatchMapping("{hospital_Id}/{appointment_Id}/accept")
-    public ResponseEntity<Response> acceptAppointment(@PathVariable Long hospital_Id, @PathVariable Long appointment_Id) throws InternalServerException, InvalidException {
-        appointmentService.acceptAppointment(hospital_Id, appointment_Id);
+    @PatchMapping("{hospital_Id}/{hospital_patient_id}/{appointment_Id}/accept")
+    public ResponseEntity<Response> acceptAppointment(@PathVariable Long hospital_Id, @PathVariable Long hospital_patient_id, @PathVariable Long appointment_Id) throws InternalServerException, InvalidException {
+        appointmentService.acceptAppointment(hospital_Id, hospital_patient_id, appointment_Id);
         return ResponseEntity.ok(new Response(true, "Appointment accepted. Consultant will be notified.", null));
     }
 
-    @PatchMapping("{hospital_Id}/{appointment_Id}/cancel")
-    public ResponseEntity<Response> cancelAppointment(@PathVariable Long hospital_Id, @PathVariable Long appointment_Id) throws InvalidException {
-        appointmentService.cancelAppointment(hospital_Id, appointment_Id);
+    @PatchMapping("{hospital_Id}/{hospital_patient_id}/{appointment_Id}/cancel")
+    public ResponseEntity<Response> cancelAppointment(@PathVariable Long hospital_Id, @PathVariable Long hospital_patient_id, @PathVariable Long appointment_Id) throws InvalidException {
+        appointmentService.cancelAppointment(hospital_Id, hospital_patient_id, appointment_Id);
         Response response = new Response(true, "Appointment cancelled successfully.", null);
         return ResponseEntity.ok(response);
 

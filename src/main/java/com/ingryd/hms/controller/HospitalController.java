@@ -6,7 +6,10 @@ import com.ingryd.hms.entity.Staff;
 import com.ingryd.hms.exception.InternalServerException;
 import com.ingryd.hms.service.HospitalService;
 import com.ingryd.hms.service.StaffService;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
+import lombok.NonNull;
 import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -56,5 +59,12 @@ public class HospitalController {
     public ResponseEntity<Set<String>> getAllConsultantSpecialties(@PathVariable Long hospital_Id) {
         Set<String> specialties = staffService.getAllConsultantSpecialties(hospital_Id);
         return ResponseEntity.ok(specialties);
+    }
+
+    @PostMapping("/{id}/patient-registration/hmo")
+    public ResponseEntity<Response> registerPatientViaHMO(@PathVariable Long id, @NotEmpty(message = "hmo number can't be empty.") @RequestParam("hmo_number") String hmo_number) throws InternalServerException {
+        hospitalService.registerPatientWithHMO(id, hmo_number);
+        Response response = new Response(true, "Registration successful.", null);
+        return ResponseEntity.status(201).body(response);
     }
 }
