@@ -38,9 +38,13 @@ public class Appointment {
     @Length(max = 50, message = "Consultant's specialty can't exceed 50 characters.")
     private String consultantSpecialty;
 
+//    @ManyToOne
+//    @JoinColumn(name = "desired_staff_id")
+//    private Staff desiredConsultant;
+
     @ManyToOne
     @JoinColumn(name = "desired_staff_id")
-    private Staff desiredConsultant;
+    private Staff staff;
 
     private boolean confirmed;
     private boolean acceptedByPatient;

@@ -52,10 +52,9 @@ public class HospitalService {
      * Registers a patient with a hospital.
      *
      * @param hospitalId
-     * @param id
      */
     @Transactional
-    public void registerPatientWithHospital(Long hospitalId, Long id) throws InternalServerException {
+    public void registerPatientWithHospital(Long hospitalId) throws InternalServerException {
         //ToDo: process payment
         //validate hospital
         Hospital hospital = validateHospital(hospitalId);

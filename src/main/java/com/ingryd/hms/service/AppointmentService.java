@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Builder
@@ -104,8 +105,8 @@ public class AppointmentService {
         if (preferredTime != null && preferredDate == null)
             throw new IllegalArgumentException("Time selected but Date is null.");
         if (preferredDate != null && preferredTime != null) {
-            boolean confirmedAppointmentExists = appointmentRepository.findByPreferredDateAndPreferredTime(preferredDate, preferredTime).isConfirmed();
-            if (confirmedAppointmentExists)
+            Optional<Appointment> existingAppointment = appointmentRepository.findByPreferredDateAndPreferredTime(preferredDate, preferredTime);
+            if (existingAppointment.isPresent() && existingAppointment.get().isConfirmed())
                 throw new IllegalArgumentException("Sorry. Selected Date and Time already taken.");
         }
 
@@ -143,7 +144,7 @@ public class AppointmentService {
                 .preferredTime(appointmentDTO.getPreferredTime())
                 .hospitalPatient(hospitalPatient)
                 .consultantSpecialty(appointmentDTO.getConsultantSpecialty())
-                .desiredConsultant(consultant)
+                .staff(consultant)
                 .acceptedByPatient(true)
                 .hospital(hospital)
                 .build();

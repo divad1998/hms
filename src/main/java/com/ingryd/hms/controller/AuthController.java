@@ -24,7 +24,6 @@ import java.util.Optional;
 public class AuthController {
 
     @Autowired
-
     private  AuthService authService;
 
     @Autowired

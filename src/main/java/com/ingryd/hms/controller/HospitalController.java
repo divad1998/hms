@@ -32,8 +32,8 @@ public class HospitalController {
 
     @PostMapping("/{hospitalId}/patient-registration")
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<?> registerPatientWithHospital (@PathVariable Long hospitalId, @RequestParam Long patientId) throws InternalServerException {
-        hospitalService.registerPatientWithHospital(patientId, hospitalId);
+    public ResponseEntity<?> registerPatientWithHospital (@PathVariable Long hospitalId) throws InternalServerException {
+        hospitalService.registerPatientWithHospital(hospitalId);
         Response response = new Response(true, "Patient registered with hospital successfully", null);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
