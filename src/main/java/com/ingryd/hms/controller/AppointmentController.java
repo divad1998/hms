@@ -20,10 +20,10 @@ public class AppointmentController {
     @Autowired
     private AppointmentService appointmentService;
 
-    @PutMapping("/{id}")
+    @PutMapping("/{id}/update")
     public ResponseEntity<Appointment> updateAppointment(
             @PathVariable Long id,
-            @RequestBody AppointmentDTO appointmentDto,
+            @RequestBody @Valid AppointmentDTO appointmentDto,
             @AuthenticationPrincipal UserDetails userDetails) {
 
         Appointment updateAppointment = appointmentService.updateAppointment(id, appointmentDto, userDetails.getUsername());
@@ -32,16 +32,17 @@ public class AppointmentController {
     }
 
     @PostMapping("/confirm")
-    public Appointment confirmAppointment(@RequestBody ConfirmAppointmentDto confirmAppointmentDto,
+    public ResponseEntity<Appointment> confirmAppointment(@RequestBody ConfirmAppointmentDto confirmAppointmentDto,
                                           @AuthenticationPrincipal UserDetails userDetails) {
 
         String username = userDetails.getUsername();
-        return appointmentService.confirmAppointment(confirmAppointmentDto, username);
+        Appointment confirmAppointment =  appointmentService.confirmAppointment(confirmAppointmentDto, username);
+         return ResponseEntity.ok(confirmAppointment);
     }
 
-    @PostMapping("/{hospitalId}/request")
-    public ResponseEntity<Response> bookAppointment(@RequestBody @Valid AppointmentDTO appointmentDTO, @PathVariable Long hospitalId) throws InternalServerException {
-        return appointmentService.bookAppointment(appointmentDTO, hospitalId);
+    @PostMapping("/{hospital_Id}/request")
+    public ResponseEntity<Response> bookAppointment(@RequestBody @Valid AppointmentDTO appointmentDTO, @PathVariable Long hospital_Id) throws InternalServerException {
+        return appointmentService.bookAppointment(appointmentDTO, hospital_Id);
     }
 }
 

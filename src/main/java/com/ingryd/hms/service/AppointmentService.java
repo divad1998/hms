@@ -3,6 +3,7 @@ package com.ingryd.hms.service;
 import com.ingryd.hms.dto.AppointmentDTO;
 import com.ingryd.hms.dto.ConfirmAppointmentDto;
 import com.ingryd.hms.dto.Response;
+import com.ingryd.hms.dto.UserDTO;
 import com.ingryd.hms.entity.*;
 import com.ingryd.hms.enums.Role;
 import com.ingryd.hms.exception.InternalServerException;
@@ -72,7 +73,7 @@ public class AppointmentService {
         } else if (user.getRole() == Role.ADMIN || user.getRole() == Role.CONSULTANT) {
             // Admin and Consultant can update consultantSpecialty and desiredConsultant fields
             appointment.setConsultantSpecialty(updatedAppointment.getConsultantSpecialty());
-            appointment.setDesiredConsultant(updatedAppointment.getDesiredConsultant());
+//            appointment.setDesiredConsultant(updatedAppointment.getDesiredConsultant());
         } else {
             throw new RuntimeException("User does not have permission to update appointment");
         }

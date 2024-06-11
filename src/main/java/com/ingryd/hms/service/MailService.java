@@ -2,6 +2,8 @@ package com.ingryd.hms.service;
 
 import com.ingryd.hms.entity.User;
 import jakarta.mail.internet.MimeMessage;
+import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
