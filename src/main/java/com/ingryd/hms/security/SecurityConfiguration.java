@@ -28,8 +28,7 @@ public class    SecurityConfiguration {
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(requestRegistry -> requestRegistry                  
 
-                        .requestMatchers(HttpMethod.PUT, "/users/**").permitAll()
-                        .requestMatchers("/admin").hasAnyAuthority(Role.ADMIN.name())
+
                         .requestMatchers(HttpMethod.POST, "/auth/logout").permitAll()
                         .requestMatchers(HttpMethod.PUT, "/appointments/{id}/update").hasAnyAuthority(Role.ADMIN.name(), Role.CONSULTANT.name())
                         .requestMatchers(HttpMethod.POST, "/appointments/confirm").hasAnyAuthority(Role.ADMIN.name(), Role.CONSULTANT.name())
