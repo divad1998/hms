@@ -3,10 +3,12 @@ package com.ingryd.hms.service;
 import com.ingryd.hms.dto.Response;
 import com.ingryd.hms.entity.Hospital;
 import com.ingryd.hms.entity.HospitalPatient;
+import com.ingryd.hms.entity.Staff;
 import com.ingryd.hms.entity.User;
 import com.ingryd.hms.exception.InternalServerException;
 import com.ingryd.hms.repository.HospitalPatientRepository;
 import com.ingryd.hms.repository.HospitalRepository;
+import com.ingryd.hms.repository.StaffRepository;
 import com.ingryd.hms.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
@@ -17,9 +19,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -29,6 +30,8 @@ public class HospitalService {
     private final HospitalPatientRepository hospitalPatientRepository;
     private final UserRepository userRepository;
     private final AuthService authService;
+    private final StaffRepository staffRepository;
+    private final HospitalPatientService hospitalPatientService;
 
     public ResponseEntity<Response> getAllHospitals(){
         Map<String, Object> data = new HashMap<>();
@@ -58,11 +61,18 @@ public class HospitalService {
         //ToDo: process payment
         //validate hospital
         Hospital hospital = validateHospital(hospitalId);
-        User authUser = authService.getAuthUser();
         //is patient already registered?
-        HospitalPatient hospitalPatient = hospitalPatientRepository.findByUser_IdAndHospital_Id(authUser.getId(), hospital.getId());
-        if (hospitalPatient != null)
-            throw new IllegalArgumentException("Patient already registered with the given hospital.");
+        User authUser = authService.getAuthUser();
+        List<HospitalPatient> hospitalPatients = hospitalPatientRepository.findByUser_IdAndHospital_Id(authUser.getId(), hospital.getId());
+        for (HospitalPatient patient : hospitalPatients) {
+            if (patient != null && patient.getHospitalNumber() != null)
+                throw new IllegalArgumentException("Patient already registered with the given hospital.");
+            if (patient != null && patient.getHmo_number() == null) {
+                log.error("Hospital Patient with id: " + patient.getId() + " doesn't have a hospital number and also doesn't have a HMO number.");
+                throw new InternalServerException("Internal Server Error. Kindly reach out to support.");
+            }
+        }
+
 
         //register patient
         HospitalPatient hospitalPatientToBeSaved = new HospitalPatient();
@@ -70,7 +80,7 @@ public class HospitalService {
         hospitalPatientToBeSaved.setUser(authUser); //set patient
         hospitalPatientToBeSaved.setHospital(hospital);
 
-        hospitalPatientRepository.save(hospitalPatientToBeSaved);
+        hospitalPatientService.saveHospitalPatient(hospitalPatientToBeSaved);
     }
 
     /**
@@ -110,5 +120,44 @@ public class HospitalService {
             throw new IllegalStateException("The hospital isn't fully registered on this platform.");
 
         return hospital;
+    }
+
+    public List<Staff> getConsultantsBySpecialty(String specialty) {
+        // Fetch all staff members from the repository
+        List<Staff> allStaff = staffRepository.findAll();
+
+        // Filter staff members by the given specialty (case-insensitive)
+        return allStaff.stream()
+                .filter(staff -> specialty.equalsIgnoreCase(staff.getSpecialty()))
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Registers a patient with a hospital via the patient's HMO number
+     * @param hospital_id
+     * @param hmo_number
+     */
+    public void registerPatientWithHMO(Long hospital_id, String hmo_number) throws InternalServerException {
+        //ToDo: get patient's details from HMO;
+        Hospital hospital = validateHospital(hospital_id);
+        //is patient already registered?
+        User authUser = authService.getAuthUser();
+        List<HospitalPatient> hospitalPatients = hospitalPatientRepository.findByUser_IdAndHospital_Id(authUser.getId(), hospital.getId());
+        for (HospitalPatient patient : hospitalPatients) {
+            if (patient != null && patient.getHmo_number() != null)
+                throw new IllegalArgumentException("Patient already registered with the given hospital.");
+            if (patient != null && patient.getHospitalNumber() == null) {
+                log.error("Hospital Patient with id: " + patient.getId() + " doesn't have a HMO number and also doesn't have a hospital number.");
+                throw new InternalServerException("Internal Server Error. Kindly reach out to support.");
+            }
+        }
+
+        //register patient
+        HospitalPatient hospitalPatientToBeSaved = new HospitalPatient();
+        hospitalPatientToBeSaved.setHmo_number(hmo_number);
+        hospitalPatientToBeSaved.setUser(authUser);
+        hospitalPatientToBeSaved.setHospital(hospital);
+
+        hospitalPatientService.saveHospitalPatient(hospitalPatientToBeSaved);
     }
 }

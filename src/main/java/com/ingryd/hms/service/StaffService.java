@@ -21,12 +21,10 @@ import java.util.Set;
 @Service
 @RequiredArgsConstructor
 public class StaffService {
-
     private final StaffRepository staffRepository;
-
     private final UserRepository userRepository;
-
     private final HospitalRepository hospitalRepository;
+
     private final MailService mailService;
 
     private final TokenService tokenService;
@@ -47,6 +45,7 @@ public class StaffService {
         }
     }
 
+
     public List<Staff> getConsultantsBySpecialty(String specialty) {
         return staffRepository.findBySpecialtyAndProfession(specialty, Profession.MEDICAL_DOCTOR);
     }
@@ -63,15 +62,14 @@ public class StaffService {
         return staffRepository.findByUser_Id(userId);
     }
 
-    public Set<String> getAllConsultantSpecialties (Long hospital_Id){
-        List <Staff> allStaff = staffRepository.findByHospital_Id(hospital_Id);
+    public Set<String> getAllConsultantSpecialties(Long hospital_Id) {
+        List<Staff> allStaff = staffRepository.findByHospital_Id(hospital_Id);
         Set<String> specialties = new HashSet<>();
 
-        for (Staff staff : allStaff){
+        for (Staff staff : allStaff) {
             String specialty = staff.getSpecialty();
-
-            if(specialty != null && !specialty.isEmpty()){
-                specialties.add(specialty.toLowerCase());
+            if (specialty != null && !specialty.isEmpty()) {
+                specialties.add(specialty.toLowerCase()); // Convert to lowercase and add to the set
             }
         }
         return specialties;

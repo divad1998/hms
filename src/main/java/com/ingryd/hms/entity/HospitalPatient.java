@@ -15,11 +15,11 @@ public class HospitalPatient {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 50, unique = true)
-    @NotBlank(message = "Hospital number cannot be blank.")
-    @NotNull(message = "Hospital number is required.")
-    @Length(max = 50, message = "Hospital number cannot exceed 50 characters.")
+    @Column(length = 50, unique = true)
     private String hospitalNumber;
+
+    @Column(length = 50)
+    private String hmo_number;
 
     @ManyToOne
     @JoinColumn(name = "patient_id", nullable = false)

@@ -39,11 +39,22 @@ public class    SecurityConfiguration {
                         .requestMatchers(HttpMethod.POST, "/auth/hospitals/signup").permitAll()
                         .requestMatchers(HttpMethod.POST, "/auth/staff/signup").hasAuthority(Role.ADMIN.name())
                         .requestMatchers(HttpMethod.POST, "/auth/forgotten-password").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/auth/email_verification").permitAll()
                         .requestMatchers(HttpMethod.POST, "/hospitals/{id}/patient-registration").hasAuthority(Role.PATIENT.name())
+
                         .requestMatchers(HttpMethod.POST, "/hospitals/{id}/patient-registration/hms").hasAuthority(Role.PATIENT.name())
                         .requestMatchers(HttpMethod.POST, "/appointments/{hospital_Id}/request").hasAuthority(Role.PATIENT.name())
                         .requestMatchers(HttpMethod.POST, "/consultations").hasAnyAuthority(Role.CONSULTANT.name())
                         .requestMatchers(HttpMethod.GET, "/medical-history/patient/{patientId}").hasAnyAuthority(Role.PATIENT.name(), Role.CONSULTANT.name())
+
+                        .requestMatchers(HttpMethod.POST, "/hospitals/{id}/patient-registration/hmo").hasAuthority(Role.PATIENT.name())
+                        .requestMatchers(HttpMethod.POST, "/appointments/{hospitalId}/{hospital_patient_id}/request").hasAuthority(Role.PATIENT.name())
+                        .requestMatchers(HttpMethod.POST, "/consultations").hasAnyAuthority(Role.CONSULTANT.name())
+                        .requestMatchers(HttpMethod.PATCH, "/appointments/{hospital_Id}/{hospital_patient_id}/{appointment_Id}/accept").hasAuthority(Role.PATIENT.name())
+                        .requestMatchers(HttpMethod.PATCH, "/appointments/{hospital_Id}/{hospital_patient_id}/{appointment_Id}/cancel").hasAuthority(Role.PATIENT.name())
+                        .requestMatchers(HttpMethod.POST, "/consultants/consultant-specialties").hasAuthority(Role.PATIENT.name())
+                        .requestMatchers(HttpMethod.POST, "consultants").hasAuthority(Role.PATIENT.name())
+
                         .anyRequest().authenticated())
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 

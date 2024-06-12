@@ -8,7 +8,6 @@ import com.ingryd.hms.entity.User;
 import com.ingryd.hms.enums.Profession;
 import com.ingryd.hms.enums.Role;
 import com.ingryd.hms.exception.InternalServerException;
-//import com.ingryd.hms.exception.NotFoundException;
 import com.ingryd.hms.mapper.Mapper;
 import com.ingryd.hms.repository.StaffRepository;
 import com.ingryd.hms.repository.TokenRepository;
@@ -17,7 +16,6 @@ import com.ingryd.hms.repository.UserRepository;
 import com.ingryd.hms.security.JwtService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -30,21 +28,16 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class AuthService {
-
     private final HospitalRepository hospitalRepository;
-
     private final UserRepository userRepository;
     private final TokenService tokenService;
+    private final MailService mailService;
     private final TokenRepository tokenRepository;
     private final AuthenticationManager authManager;
     private final JwtService jwtService;
-    private final MailService mailService;
     private final StaffRepository staffRepository;
 
     @Transactional
@@ -79,14 +72,15 @@ public class AuthService {
         int token = tokenService.generateToken();
         Token savedToken = tokenService.saveToken(token, adminUser);
         //ToDo: send mail below
+        mailService.sendEmailVerificationMail(adminUser, token);
 
         //response
         Response response = new Response(true, "Signed up. Check mailbox to verify email quickly.", null);
         return ResponseEntity.status(201).body(response);
     }
-    
+
     @Transactional
-    public void patientSignup(UserDTO userDTO) throws Exception {
+    public void clientSignup(UserDTO userDTO) throws Exception {
         User user = Mapper.mapper.mapToUser(userDTO);
         user.setPassword(userDTO.getPassword()); // Set password from DTO
         user.setRole(Role.PATIENT);
@@ -97,10 +91,11 @@ public class AuthService {
         mailService.sendEmailVerificationMail(user, savedToken.getValue());
     }
 
-    public void verifyEmail(int value){
+    public void emailVerification(int value){
         Token token = tokenRepository.findByValue(value).get();
         User user = token.getUser();
         user.setEnabled(true);
+        userRepository.save(user);
     }
 
     public String login(LoginDTO loginDTO) {
@@ -150,12 +145,15 @@ public class AuthService {
         staff.setHospital(hospital);
         staffRepository.save(staff);
 
-        //ToDo: send verification mail to staff's email
+        //Token Service
+        int token = tokenService.generateToken();
+        tokenService.saveToken(token, user);
+        mailService.sendEmailVerificationMail(user, token);
 
         //build response
         Response response = new Response();
         response.setStatus(true);
-        response.setMessage("Staff created successfully. Email verification sent to staff's mailbox.");
+        response.setMessage("Staff created successfully. Verification mail is on its way to staff's mailbox.");
         response.setData(null);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }

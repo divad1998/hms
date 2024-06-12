@@ -1,10 +1,7 @@
 package com.ingryd.hms.dto;
 
 import com.ingryd.hms.enums.Role;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.*;
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;
 
@@ -19,7 +16,6 @@ public class UserDTO {
     @Length(max = 30, message = "Max length of first name is 30 characters.")
     private String firstName;
 
-    @NotBlank(message = "Middle name can't be blank.")
     @Length(max = 30, message = "Max length is middle name is 30 characters.")
     private String middleName;
 
@@ -28,6 +24,7 @@ public class UserDTO {
     @Length(max = 30, message = "Max length of last name is 30 characters.")
     private String lastName;
 
+    @NotEmpty(message = "Phone number can't be blank or empty.")
     @Length(min = 11, max = 11, message = "Max length of phone number is 11 digits.")
     private String phoneNumber;
 
