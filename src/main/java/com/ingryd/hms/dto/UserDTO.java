@@ -1,8 +1,10 @@
 package com.ingryd.hms.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ingryd.hms.enums.Role;
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;
 

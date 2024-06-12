@@ -1,8 +1,5 @@
 package com.ingryd.hms.service;
 
-import com.ingryd.hms.dto.Response;
-import com.ingryd.hms.dto.StaffDTO;
-import com.ingryd.hms.entity.Hospital;
 import com.ingryd.hms.entity.Staff;
 import com.ingryd.hms.entity.User;
 import com.ingryd.hms.enums.Profession;
@@ -11,8 +8,6 @@ import com.ingryd.hms.repository.HospitalRepository;
 import com.ingryd.hms.repository.StaffRepository;
 import com.ingryd.hms.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -33,6 +28,8 @@ public class StaffService {
 
     private final HospitalRepository hospitalRepository;
     private final MailService mailService;
+
+    private final TokenService tokenService;
 
     private final PasswordEncoder passwordEncoder;
 
@@ -66,7 +63,7 @@ public class StaffService {
         return staffRepository.findByUser_Id(userId);
     }
 
-    public Set<String> getAllConsultantSpecialist (Long hospital_Id){
+    public Set<String> getAllConsultantSpecialties (Long hospital_Id){
         List <Staff> allStaff = staffRepository.findByHospital_Id(hospital_Id);
         Set<String> specialties = new HashSet<>();
 

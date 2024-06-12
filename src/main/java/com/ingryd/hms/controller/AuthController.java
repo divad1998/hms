@@ -90,7 +90,7 @@ public class AuthController {
     }
 
     @PostMapping("/staff/signup")
-    public ResponseEntity<Response> createStaff(@RequestBody @Valid StaffDTO staffDTO) throws InternalServerException {
+    public ResponseEntity<Response> staffSignup(@RequestBody @Valid StaffDTO staffDTO) throws InternalServerException {
         return authService.createStaff(staffDTO);
     }
 }
