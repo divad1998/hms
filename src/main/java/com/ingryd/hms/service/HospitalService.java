@@ -159,4 +159,18 @@ public class HospitalService {
 
         hospitalPatientService.saveHospitalPatient(hospitalPatientToBeSaved);
     }
+
+    /**
+     * Validates hospital related to consultant entity.
+     * @param consultant
+     * @return
+     */
+    public Hospital validateConsultantHospital(Staff consultant) throws InternalServerException {
+        Hospital hospital = consultant.getHospital();
+        if (hospital == null) {
+            log.error("Consultant with id: " + consultant.getId() + " isn't related with any hospital.");
+            throw new InternalServerException("Internal error. Kindly contact support.");
+        }
+        return hospital;
+    }
 }

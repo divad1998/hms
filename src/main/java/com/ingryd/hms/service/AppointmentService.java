@@ -22,14 +22,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -139,12 +138,56 @@ public class AppointmentService {
         //ToDo: send in-app notif to Related consultant
         }
 
-    public ResponseEntity<List<Appointment>> getAllAppointment(){
-        return new ResponseEntity<>(appointmentRepository.findAll(), HttpStatus.OK);
+    public ResponseEntity<Response> consultantGetAppointmentById(long id) throws InvalidException, InternalServerException {
+        //Test cases:
+        //endpoint; consultant; needs to belong to the consultant or no consultant, and hospital; if invalid
+        //validate consultant entity associated with authenticated user
+        Staff consultant = staffService.validateAuthenticatedConsultant();
+        //validate related hospital of consultant
+        Hospital hospital = hospitalService.validateConsultantHospital(consultant);
+        //validate appointment
+        Appointment appointment = appointmentRepository.findByIdAndHospital_Id(id, hospital.getId());
+        if (appointment == null)
+            throw new InvalidException("Invalid appointment.");
+        if (appointment.getConsultantSpecialty() != null && !appointment.getConsultantSpecialty().equals(consultant.getSpecialty()))
+            throw new InvalidException("You can't view this appointment.");
+        if (appointment.getStaff() != null && !appointment.getStaff().getId().equals(consultant.getId()))
+            throw new InvalidException("You can't view this appointment.");
+
+        //build response
+        Map<String, Object> map = new HashMap<>();
+        map.put("appointment", appointment);
+        Response response = new Response(true, "Successful.", map);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    public ResponseEntity<Appointment> findById(long id){
-        return new ResponseEntity<>(appointmentRepository.findById(id).get(), HttpStatus.OK);
+    public ResponseEntity<Response> getAppointmentsOfConsultant() throws InternalServerException {
+        //Test cases:
+        //endpoint; consultant only; if appointments is null; only view appointment requests for himself/herself, or those with null specialty and desiredStaff of your hospital; response:OK
+        //validate authenticated consultant user
+        Staff consultant = staffService.validateAuthenticatedConsultant();
+        //validate associated hospital
+        Hospital hospital = hospitalService.validateConsultantHospital(consultant);
+        //fetch and validate appointments
+        List<Appointment> appointments = appointmentRepository.findByHospital_Id(hospital.getId());
+        if (appointments.isEmpty()) {
+            Map<String, Object> map = new HashMap<>();
+            map.put("appointments", new HashMap<>());
+            return new ResponseEntity<>(new Response(true, "Successful.", map), HttpStatus.OK);
+        }
+        Set<Appointment> appointmentSet = appointments
+                                                .stream()
+                                                .filter(appointment -> (appointment.getConsultantSpecialty() == null && appointment.getStaff() == null) //appt specialty is not null or null; appointment desired staff is not null or null
+                                                                || (appointment.getStaff() != null && appointment.getStaff().getId().equals(consultant.getId()))
+                                                                || (appointment.getConsultantSpecialty() != null && appointment.getConsultantSpecialty().equals(consultant.getSpecialty()))
+                                                        )
+                                                .collect(Collectors.toSet());
+
+        //build response
+        Map<String, Object> map = new HashMap<>();
+        map.put("appointments", appointments);
+        Response response = new Response(true, "Successful.", map);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     /**
@@ -185,5 +228,6 @@ public class AppointmentService {
         //cancel appointment
         appointment.setCancelled(true);
         appointmentRepository.save(appointment);
+        //TODO: Send in-app notif to consultant
     }
 }

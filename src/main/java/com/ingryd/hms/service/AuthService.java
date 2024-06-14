@@ -80,7 +80,7 @@ public class AuthService {
     }
 
     @Transactional
-    public void clientSignup(UserDTO userDTO) throws Exception {
+    public void patientSignup(UserDTO userDTO) throws Exception {
         User user = Mapper.mapper.mapToUser(userDTO);
         user.setPassword(userDTO.getPassword()); // Set password from DTO
         user.setRole(Role.PATIENT);

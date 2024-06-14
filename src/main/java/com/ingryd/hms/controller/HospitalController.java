@@ -49,18 +49,6 @@ public class HospitalController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/consultants")
-    public ResponseEntity<List<Staff>> getConsultantsBySpecialty(@RequestParam String specialty) {
-        List<Staff> consultants = hospitalService.getConsultantsBySpecialty(specialty);
-        return ResponseEntity.ok(consultants);
-    }
-
-    @GetMapping("{hospital_Id}/consultant-specialties")
-    public ResponseEntity<Set<String>> getAllConsultantSpecialties(@PathVariable Long hospital_Id) {
-        Set<String> specialties = staffService.getAllConsultantSpecialties(hospital_Id);
-        return ResponseEntity.ok(specialties);
-    }
-
     @PostMapping("/{id}/patient-registration/hmo")
     public ResponseEntity<Response> registerPatientViaHMO(@PathVariable Long id, @NotEmpty(message = "hmo number can't be empty.") @RequestParam("hmo_number") String hmo_number) throws InternalServerException {
         hospitalService.registerPatientWithHMO(id, hmo_number);

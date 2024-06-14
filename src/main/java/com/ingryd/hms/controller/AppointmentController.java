@@ -2,6 +2,7 @@ package com.ingryd.hms.controller;
 
 import com.ingryd.hms.dto.AppointmentDTO;
 import com.ingryd.hms.dto.Response;
+import com.ingryd.hms.entity.Appointment;
 import com.ingryd.hms.exception.InternalServerException;
 import com.ingryd.hms.exception.InvalidException;
 import com.ingryd.hms.service.AppointmentService;
@@ -9,6 +10,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("appointments")
@@ -32,6 +35,15 @@ public class AppointmentController {
         appointmentService.cancelAppointment(hospital_Id, hospital_patient_id, appointment_Id);
         Response response = new Response(true, "Appointment cancelled successfully.", null);
         return ResponseEntity.ok(response);
+    }
 
+    @GetMapping("/consultant_view")
+    public ResponseEntity<Response> getAppointmentsOfConsultant() throws InternalServerException {
+        return appointmentService.getAppointmentsOfConsultant();
+    }
+
+    @GetMapping("{/id/consultant_view}")
+    public ResponseEntity<Response> consultantGetAppointmentById(@PathVariable long id) throws InternalServerException, InvalidException {
+        return appointmentService.consultantGetAppointmentById(id);
     }
 }

@@ -43,8 +43,8 @@ public class AuthController {
     }
 
     @PostMapping("/patients/signup")
-    public ResponseEntity<?> clientSignup(@RequestBody @Valid UserDTO userDTO) throws Exception {
-        authService.clientSignup(userDTO);
+    public ResponseEntity<?> patientSignup(@RequestBody @Valid UserDTO userDTO) throws Exception {
+        authService.patientSignup(userDTO);
         //build response on success
         Response response = new Response(true, "Signed up. Check mailbox to verify email quickly.", null);
         Link loginLink = WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(this.getClass()).login(null)).withRel("login");

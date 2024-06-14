@@ -8,6 +8,7 @@ import com.ingryd.hms.entity.Staff;
 import com.ingryd.hms.entity.User;
 import com.ingryd.hms.enums.Profession;
 import com.ingryd.hms.exception.InternalServerException;
+import com.ingryd.hms.exception.InvalidException;
 import com.ingryd.hms.repository.ConsultationRepository;
 //import com.ingryd.hms.repository.HospitalClientRepository;
 import com.ingryd.hms.repository.HospitalPatientRepository;
@@ -21,6 +22,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -82,5 +84,28 @@ public class ConsultationService {
         Response response = new Response();
         response.setMessage("Consultation created successfully.");
         return new ResponseEntity<>(response, HttpStatus.CREATED);
+    }
+
+    public List<Consultation> fetchConsultations() throws InternalServerException {
+        //Test cases
+        //endpoint, COnsultant role, must be consultant that created the consultation, response
+        Staff consultant = staffService.validateAuthenticatedConsultant();
+        return consultationRepository.findByStaff_IdAndHospital_Id(consultant.getId(), consultant.getHospital().getId());
+    }
+
+    /**
+     * Fetches a consultation of the authenticated consultant
+     * @param id of the consultation
+     * @return
+     * @throws InternalServerException
+     */
+    public Consultation fetchConsultationById(Long id) throws InternalServerException, InvalidException {
+        //Test cases:
+        //endpoint, COnsultant role, must be consultant that created the consultation, response
+        Staff consultant = staffService.validateAuthenticatedConsultant();
+        Consultation consultation = consultationRepository.findByIdAndStaff_IdAndHospital_Id(id, consultant.getId(), consultant.getHospital().getId());
+        if (consultation == null)
+            throw new InvalidException("Invalid Consultation.");
+        return consultation;
     }
 }
