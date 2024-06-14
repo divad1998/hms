@@ -48,8 +48,6 @@ public class Consultation {
     private String diagnosis;
 
     @Column(length = 1000)
-    @NotBlank(message = "The Referred can't be blank.")
-    @Length(max = 1000, message = "The Referred can't exceed 1000 characters.")
     private String referredTo;
 
     private boolean completed;

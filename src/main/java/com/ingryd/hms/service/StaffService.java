@@ -13,8 +13,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -52,5 +54,18 @@ public class StaffService {
 
     public Staff getStaffByUserId(Long userId) {
         return staffRepository.findByUser_Id(userId);
+    }
+
+    public Set<String> getAllConsultantSpecialties(Long hospital_Id) {
+        List<Staff> allStaff = staffRepository.findByHospital_Id(hospital_Id);
+        Set<String> specialties = new HashSet<>();
+
+        for (Staff staff : allStaff) {
+            String specialty = staff.getSpecialty();
+            if (specialty != null && !specialty.isEmpty()) {
+                specialties.add(specialty.toLowerCase()); // Convert to lowercase and add to the set
+            }
+        }
+        return specialties;
     }
 }

@@ -1,5 +1,6 @@
 package com.ingryd.hms.controller;
 import com.ingryd.hms.dto.*;
+import com.ingryd.hms.exception.InternalServerException;
 import com.ingryd.hms.service.AuthService;
 import com.ingryd.hms.service.PasswordService;
 import lombok.AllArgsConstructor;
@@ -17,7 +18,6 @@ import com.ingryd.hms.dto.LoginDTO;
 import jakarta.validation.Valid;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
-import org.springframework.http.HttpStatus;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -28,7 +28,7 @@ import java.util.Optional;
 @RequestMapping("auth")
 public class AuthController {
     @Autowired
-    private final AuthService authService;
+    private AuthService authService;
     @Autowired
     private PasswordService passwordService;
 
@@ -38,7 +38,6 @@ public class AuthController {
     }
 
     @PostMapping("/patients/signup")
-    @ResponseStatus(code = HttpStatus.CREATED)
     public ResponseEntity<?> clientSignup(@RequestBody @Valid UserDTO userDTO) throws Exception {
         authService.clientSignup(userDTO);
         //build response on success
@@ -46,13 +45,16 @@ public class AuthController {
         Link loginLink = WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(this.getClass()).login(null)).withRel("login");
         Link resendLink = WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(this.getClass()).resendVerificationMail()).withRel("resend_verification_mail");
         response.add(loginLink, resendLink);
-        return ResponseEntity.of(Optional.of(response));
+        return ResponseEntity.status(201).body(Optional.of(response));
     }
 
-    @PostMapping("/email_verification")
-    public ResponseEntity<String> verifyEmail(@RequestBody @Valid VerificationDTO dto) {
-        authService.emailVerification(dto.getValue());
-        return new ResponseEntity<>("verified!", HttpStatus.OK); //ToDo: refactor
+
+
+    @PostMapping("/email_verification/{token}")
+    public ResponseEntity<?> verifyEmail(@PathVariable @Valid int token) throws Exception {
+        authService.emailVerification(token);
+        Response response = new Response(true, "email verified.", null);
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/login")
@@ -77,15 +79,22 @@ public class AuthController {
         return ResponseEntity.ok(response);
     }
   
-    @PostMapping("/forgotten_password")
-    public ResponseEntity<String> forgottenPassword(@RequestBody @Valid ForgottenPasswordDto dto){
-        passwordService.forgottenPassword(dto.getEmail());
-        return ResponseEntity.ok().build();
+    @PostMapping("/forgotten_password/{email}")
+    public ResponseEntity<?> forgottenPassword(@PathVariable @Valid String email) throws Exception {
+        passwordService.forgottenPassword(email);
+        Response response = new Response(true, "A token has been sent to your email address.", null);
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/reset_password")
-    public ResponseEntity<?> resetPassword(@PathVariable @Valid PasswordDTO dto){
-        passwordService.resetPassword(dto);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<?> passwordReset(@RequestBody @Valid PasswordDTO dto) throws Exception {
+        passwordService.passwordReset(dto);
+        Response response = new Response(true, "password successfully changed.", null);
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/staff/signup")
+    public ResponseEntity<Response> staffSignup(@RequestBody @Valid StaffDTO staffDTO) throws InternalServerException {
+        return authService.createStaff(staffDTO);
     }
 }

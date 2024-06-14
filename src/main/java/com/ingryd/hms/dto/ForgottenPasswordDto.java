@@ -10,7 +10,7 @@ import lombok.NonNull;
 @Data
 public class ForgottenPasswordDto {
 
-    @Email(message = "Invalid Email.")
+    @Email(message = "must be a valid email.")
     @NotEmpty(message = "Email must not be empty.")
     private String email;
 }

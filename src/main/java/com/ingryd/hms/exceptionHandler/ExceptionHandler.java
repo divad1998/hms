@@ -2,10 +2,12 @@ package com.ingryd.hms.exceptionHandler;
 
 import com.ingryd.hms.dto.Response;
 import com.ingryd.hms.exception.InternalServerException;
+import com.ingryd.hms.exception.InvalidException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
@@ -53,6 +55,16 @@ public class ExceptionHandler {
 
     @org.springframework.web.bind.annotation.ExceptionHandler(IllegalStateException.class)
     public ResponseEntity<Response> handle(IllegalStateException e) {
+        return ResponseEntity.status(422).body(new Response(false, e.getMessage(), null));
+    }
+
+    @org.springframework.web.bind.annotation.ExceptionHandler(InvalidException.class)
+    public ResponseEntity<Response> handle(InvalidException e) {
+        return ResponseEntity.status(422).body(new Response(false, e.getMessage(), null));
+    }
+
+    @org.springframework.web.bind.annotation.ExceptionHandler(MissingServletRequestParameterException.class)
+    public ResponseEntity<Response> handle(MissingServletRequestParameterException e) {
         return ResponseEntity.status(422).body(new Response(false, e.getMessage(), null));
     }
 }
