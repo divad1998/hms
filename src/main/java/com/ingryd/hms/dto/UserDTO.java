@@ -1,6 +1,5 @@
 package com.ingryd.hms.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ingryd.hms.enums.Role;
 import jakarta.validation.constraints.*;
 import lombok.Data;
