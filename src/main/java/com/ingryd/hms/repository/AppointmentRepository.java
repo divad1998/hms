@@ -9,8 +9,11 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
+
 public interface AppointmentRepository extends JpaRepository<Appointment, Long> {
     Appointment findByHospitalPatient_IdAndPreferredDateAndPreferredTime(Long hospitalPatientId, LocalDate preferredDate, LocalTime preferredTime);
     Appointment findByIdAndHospitalPatient_idAndHospital_id(Long id, Long hospitalPatientId, Long hospitalId);
-    List<Appointment> findByStaff_idAndPreferredDateAndPreferredTime(Long staff_id, LocalDate preferredDate, LocalTime preferredTime);
+    Optional<Appointment> findByPreferredDateAndPreferredTime(LocalDate preferredDate, LocalTime preferredTime);
+
+    List<Appointment> findByStaff_idAndPreferredDateAndPreferredTime(Long id, LocalDate preferredDate, LocalTime preferredTime);
 }

@@ -1,8 +1,5 @@
 package com.ingryd.hms.service;
 
-import com.ingryd.hms.dto.Response;
-import com.ingryd.hms.dto.StaffDTO;
-import com.ingryd.hms.entity.Hospital;
 import com.ingryd.hms.entity.Staff;
 import com.ingryd.hms.entity.User;
 import com.ingryd.hms.enums.Profession;
@@ -11,8 +8,6 @@ import com.ingryd.hms.repository.HospitalRepository;
 import com.ingryd.hms.repository.StaffRepository;
 import com.ingryd.hms.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -29,22 +24,28 @@ public class StaffService {
     private final StaffRepository staffRepository;
     private final UserRepository userRepository;
     private final HospitalRepository hospitalRepository;
-    private final PasswordEncoder passwordEncoder;
+
     private final MailService mailService;
+
     private final TokenService tokenService;
 
-    public boolean isAdminUser() {
+    private final PasswordEncoder passwordEncoder;
+
+
+    public boolean isAdminUser(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getName();
         Optional<User> adminUser = Optional.ofNullable(userRepository.findByEmail(email));
-        if (adminUser.isPresent()) {
+
+        if (adminUser.isPresent()){
             User user = adminUser.get();
             return user.getRole() == Role.ADMIN;
-        } else {
+        }else {
             return false;
         }
     }
-  
+
+
     public List<Staff> getConsultantsBySpecialty(String specialty) {
         return staffRepository.findBySpecialtyAndProfession(specialty, Profession.MEDICAL_DOCTOR);
     }
