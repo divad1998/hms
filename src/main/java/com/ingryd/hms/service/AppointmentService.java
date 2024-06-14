@@ -25,6 +25,8 @@ import java.util.Optional;
 @Slf4j
 @Service
 public class AppointmentService {
+
+    @Autowired
     private final AppointmentRepository appointmentRepository;
     private final HospitalService hospitalService;
     private final AuthService authService;
@@ -87,6 +89,13 @@ public class AppointmentService {
 
 
 
+    public ResponseEntity<List<Appointment>> getAllAppointment(){
+        return new ResponseEntity<>(appointmentRepository.findAll(), HttpStatus.OK);
+    }
+
+    public ResponseEntity<Appointment> findById(long id){
+        return new ResponseEntity<>(appointmentRepository.findById(id).get(), HttpStatus.OK);
+    }
     public ResponseEntity<Response> bookAppointment(AppointmentDTO appointmentDTO, Long hospitalId, Long hospitalPatient_id) throws InternalServerException, InvalidException {
 
         //hospital validation
@@ -195,13 +204,13 @@ public class AppointmentService {
         //ToDo: send in-app notif to Related consultant
         }
 
-    public ResponseEntity<List<Appointment>> getAllAppointment(){
+/*    public ResponseEntity<List<Appointment>> getAllAppointment(){
         return new ResponseEntity<>(appointmentRepository.findAll(), HttpStatus.OK);
     }
 
     public ResponseEntity<Appointment> findById(long id){
         return new ResponseEntity<>(appointmentRepository.findById(id).get(), HttpStatus.OK);
-    }
+    }*/
 
     /**
      * Checks whether Appointment is valid for the hospital patient at the hospital.

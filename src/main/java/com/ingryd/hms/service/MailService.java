@@ -30,7 +30,7 @@ public class MailService {
             messageHelper.setTo(user.getEmail());
             messageHelper.setFrom("hospitalmanagementsystem1.0@gmail.com");
             messageHelper.setSubject("Verify your email");
-            messageHelper.setText("Dear " + user.getFirstName() + "," + " kindly hit: " + "http://localhost:8080/api/v1/email_verification/" + " and use " + token + " to verify your email.");
+            messageHelper.setText("Dear " + user.getFirstName() + "," + " kindly hit: " + "http://localhost:8080/api/v1/auth/email_verification" + " and use " + token + " to verify your email.");
 
             mailSender.send(messageHelper.getMimeMessage());
         } catch (Exception e) {

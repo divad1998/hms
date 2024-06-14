@@ -45,7 +45,6 @@ public class StaffService {
         }
     }
 
-
     public List<Staff> getConsultantsBySpecialty(String specialty) {
         return staffRepository.findBySpecialtyAndProfession(specialty, Profession.MEDICAL_DOCTOR);
     }

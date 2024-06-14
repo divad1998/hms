@@ -28,6 +28,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class AuthService {
@@ -91,11 +93,14 @@ public class AuthService {
         mailService.sendEmailVerificationMail(user, savedToken.getValue());
     }
 
-    public void emailVerification(int value){
-        Token token = tokenRepository.findByValue(value).get();
-        User user = token.getUser();
-        user.setEnabled(true);
-        userRepository.save(user);
+    public void emailVerification(int value) throws Exception{
+        if (value > 0){
+            Optional<Token> token = tokenRepository.findByValue(value);
+            User user = token.get().getUser();
+            assert user != null;
+            user.setEnabled(true);
+            userRepository.save(user);
+        }
     }
 
     public String login(LoginDTO loginDTO) {

@@ -27,18 +27,16 @@ public class    SecurityConfiguration {
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(requestRegistry -> requestRegistry                  
-
-
                         .requestMatchers(HttpMethod.POST, "/auth/logout").permitAll()
                         .requestMatchers(HttpMethod.PUT, "/appointments/{id}/update").hasAnyAuthority(Role.ADMIN.name(), Role.CONSULTANT.name())
                         .requestMatchers(HttpMethod.POST, "/appointments/confirm").hasAnyAuthority(Role.ADMIN.name(), Role.CONSULTANT.name())
-
                         .requestMatchers(HttpMethod.POST, "/auth/patients/signup").permitAll()
                         .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/auth/hospitals/signup").permitAll()
                         .requestMatchers(HttpMethod.POST, "/auth/staff/signup").hasAuthority(Role.ADMIN.name())
-                        .requestMatchers(HttpMethod.POST, "/auth/forgotten-password").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/auth/email_verification").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/auth/forgotten_password/{email}").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/auth/reset_password").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/auth/email_verification/{token}").permitAll()
                         .requestMatchers(HttpMethod.POST, "/hospitals/{id}/patient-registration").hasAuthority(Role.PATIENT.name())
 
                         .requestMatchers(HttpMethod.POST, "/hospitals/{id}/patient-registration/hms").hasAuthority(Role.PATIENT.name())
