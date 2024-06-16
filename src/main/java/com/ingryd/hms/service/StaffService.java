@@ -68,4 +68,14 @@ public class StaffService {
         }
         return specialties;
     }
+
+    public List<Staff> getNullSpecialistConsultant (Long hospital_id) {
+        List<Staff> hospitalStaff = staffRepository.findByHospital_Id(hospital_id);
+
+        return hospitalStaff.stream()
+                .filter(staff -> staff.getUser().isEnabled())
+                .filter(staff -> staff.getSpecialty() == null)
+                .toList();
+    }
+
 }

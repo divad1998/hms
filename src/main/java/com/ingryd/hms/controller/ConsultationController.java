@@ -2,6 +2,7 @@ package com.ingryd.hms.controller;
 
 import com.ingryd.hms.dto.ConsultationDTO;
 import com.ingryd.hms.dto.Response;
+import com.ingryd.hms.entity.Staff;
 import com.ingryd.hms.exception.InternalServerException;
 import com.ingryd.hms.service.ConsultationService;
 import jakarta.validation.Valid;
@@ -11,6 +12,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("consultations")
