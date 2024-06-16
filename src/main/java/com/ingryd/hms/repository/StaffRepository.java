@@ -11,4 +11,5 @@ public interface StaffRepository extends JpaRepository<Staff, Long> {
     Staff findByIdAndProfession(Long id, Profession profession);
     List<Staff> findByHospital_Id(Long hospitalId);
     Staff findByUser_Id(Long userId);
+
 }
