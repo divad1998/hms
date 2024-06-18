@@ -43,6 +43,7 @@ public class    SecurityConfiguration {
                         .requestMatchers(HttpMethod.POST, "/appointments/{hospital_Id}/request").hasAuthority(Role.PATIENT.name())
                         .requestMatchers(HttpMethod.POST, "/consultations").hasAnyAuthority(Role.CONSULTANT.name())
                         .requestMatchers(HttpMethod.GET, "/medical-history/patient/{patientId}").hasAnyAuthority(Role.PATIENT.name(), Role.CONSULTANT.name())
+                        .requestMatchers(HttpMethod.GET, "/appointment/consultants/{hospital_id}").hasAuthority(Role.PATIENT.name())
 
                         .requestMatchers(HttpMethod.POST, "/hospitals/{id}/patient-registration/hmo").hasAuthority(Role.PATIENT.name())
                         .requestMatchers(HttpMethod.POST, "/appointments/{hospitalId}/{hospital_patient_id}/request").hasAuthority(Role.PATIENT.name())

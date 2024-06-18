@@ -13,10 +13,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -77,10 +75,14 @@ public class StaffService {
     public List<Staff> getNullSpecialistConsultant (Long hospital_id) {
         List<Staff> hospitalStaff = staffRepository.findByHospital_Id(hospital_id);
 
-        return hospitalStaff.stream()
+        List<Staff> filtered = hospitalStaff.stream()
                 .filter(staff -> staff.getUser().isEnabled())
-                .filter(staff -> staff.getSpecialty() == null)
-                .toList();
+                .filter(staff -> Objects.equals(staff.getSpecialty(), null))
+                .collect(Collectors.toList());
+
+        System.out.println(filtered.size());
+
+        return filtered;
     }
 
 }

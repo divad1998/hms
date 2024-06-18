@@ -38,7 +38,7 @@ public class Appointment {
         return appointmentService.findById(id);
     }
 
-    @GetMapping("{hospital_id}")
+    @GetMapping("/consultants/{hospital_id}")
     @PreAuthorize("hasRole('PATIENT')")
     List<Staff> getNullSpecialistConsultant (@PathVariable Long hospital_id) {
         return staffService.getNullSpecialistConsultant(hospital_id);
