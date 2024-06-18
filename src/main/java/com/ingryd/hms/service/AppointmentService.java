@@ -1,7 +1,10 @@
 package com.ingryd.hms.service;
 
 import com.ingryd.hms.controller.AppointmentController;
+import com.ingryd.hms.dto.ConfirmAppointmentDto;
+import com.ingryd.hms.dto.UpdateAppointmentDTO;
 import com.ingryd.hms.entity.Appointment;
+import com.ingryd.hms.enums.Role;
 import com.ingryd.hms.exception.InvalidException;
 import com.ingryd.hms.repository.AppointmentRepository;
 import lombok.NonNull;
@@ -71,18 +74,20 @@ public class AppointmentService {
         //validate consultant specialty
         String specialty = appointmentDTO.getConsultantSpecialty();
         if (specialty != null) {
-            if (staffService.getConsultantsBySpecialty(specialty).isEmpty())
+            if (staffService.getConsultantsBySpecialty(specialty, hospital.getId()).isEmpty())
                 throw new IllegalArgumentException("Invalid consultant specialty.");
         }
         //validate consultant id
         Long consultantId = appointmentDTO.getDesiredConsultantId();
         Staff consultant = null;
-        if (consultantId != 0) {
+        if (consultantId != null) {
             consultant = staffService.getConsultantById(consultantId);
             if (consultant == null)
                 throw new IllegalArgumentException("Invalid Consultant.");
             if (!consultant.getUser().isEnabled())
                 throw new IllegalArgumentException("Selected Consultant isn't registered fully on this platform.");
+            if (!consultant.getSpecialty().equals(appointmentDTO.getConsultantSpecialty()))
+                throw new InvalidException("Specialty and Consultant mismatch.");
         }
 
         Appointment appointment = Appointment.builder()
@@ -138,58 +143,6 @@ public class AppointmentService {
         //ToDo: send in-app notif to Related consultant
         }
 
-    public ResponseEntity<Response> consultantGetAppointmentById(long id) throws InvalidException, InternalServerException {
-        //Test cases:
-        //endpoint; consultant; needs to belong to the consultant or no consultant, and hospital; if invalid
-        //validate consultant entity associated with authenticated user
-        Staff consultant = staffService.validateAuthenticatedConsultant();
-        //validate related hospital of consultant
-        Hospital hospital = hospitalService.validateConsultantHospital(consultant);
-        //validate appointment
-        Appointment appointment = appointmentRepository.findByIdAndHospital_Id(id, hospital.getId());
-        if (appointment == null)
-            throw new InvalidException("Invalid appointment.");
-        if (appointment.getConsultantSpecialty() != null && !appointment.getConsultantSpecialty().equals(consultant.getSpecialty()))
-            throw new InvalidException("You can't view this appointment.");
-        if (appointment.getStaff() != null && !appointment.getStaff().getId().equals(consultant.getId()))
-            throw new InvalidException("You can't view this appointment.");
-
-        //build response
-        Map<String, Object> map = new HashMap<>();
-        map.put("appointment", appointment);
-        Response response = new Response(true, "Successful.", map);
-        return new ResponseEntity<>(response, HttpStatus.OK);
-    }
-
-    public ResponseEntity<Response> getAppointmentsOfConsultant() throws InternalServerException {
-        //Test cases:
-        //endpoint; consultant only; if appointments is null; only view appointment requests for himself/herself, or those with null specialty and desiredStaff of your hospital; response:OK
-        //validate authenticated consultant user
-        Staff consultant = staffService.validateAuthenticatedConsultant();
-        //validate associated hospital
-        Hospital hospital = hospitalService.validateConsultantHospital(consultant);
-        //fetch and validate appointments
-        List<Appointment> appointments = appointmentRepository.findByHospital_Id(hospital.getId());
-        if (appointments.isEmpty()) {
-            Map<String, Object> map = new HashMap<>();
-            map.put("appointments", new HashMap<>());
-            return new ResponseEntity<>(new Response(true, "Successful.", map), HttpStatus.OK);
-        }
-        Set<Appointment> appointmentSet = appointments
-                                                .stream()
-                                                .filter(appointment -> (appointment.getConsultantSpecialty() == null && appointment.getStaff() == null) //appt specialty is not null or null; appointment desired staff is not null or null
-                                                                || (appointment.getStaff() != null && appointment.getStaff().getId().equals(consultant.getId()))
-                                                                || (appointment.getConsultantSpecialty() != null && appointment.getConsultantSpecialty().equals(consultant.getSpecialty()))
-                                                        )
-                                                .collect(Collectors.toSet());
-
-        //build response
-        Map<String, Object> map = new HashMap<>();
-        map.put("appointments", appointments);
-        Response response = new Response(true, "Successful.", map);
-        return new ResponseEntity<>(response, HttpStatus.OK);
-    }
-
     /**
      * Checks whether Appointment is valid for the hospital patient at the hospital.
      * @param appointmentId
@@ -205,7 +158,7 @@ public class AppointmentService {
         return appointment;
     }
 
-    private void validateSpecialtyInAppointment(String specialty, Long hospital_Id) throws InternalServerException {
+    private void validateSpecialtyInAppointment(String specialty, Long hospital_Id) throws InternalServerException, InvalidException {
         if (specialty != null) {
             boolean validSpecialty = staffService.getAllConsultantSpecialties(hospital_Id).contains(specialty.toLowerCase());
             if (!validSpecialty) {
@@ -228,6 +181,146 @@ public class AppointmentService {
         //cancel appointment
         appointment.setCancelled(true);
         appointmentRepository.save(appointment);
-        //TODO: Send in-app notif to consultant
+    }
+
+    public void confirmAppointment(ConfirmAppointmentDto dto, User authUser) throws InvalidException {
+        //Test cases: endpoint, consultant role, validate appointment, preferred date and time should be set, auth consultant should be in-charge of appointment, appointment shouldn't be cancelled, or confirmed and should be accepted by patient
+        Staff consultant = staffService.getStaffByUserId(authUser.getId());
+        Appointment appointment = appointmentRepository.findByIdAndStaff_idAndHospital_id(Long.valueOf(dto.getAppointmentId()), consultant.getId(), consultant.getHospital().getId());
+        if (appointment == null)
+            throw new InvalidException("You have no such Appointment.");
+        if (appointment.getPreferredDate() == null || appointment.getPreferredTime() == null)
+            throw new InvalidException("The Appointment has no scheduled date or time.");
+        if (!appointment.isAcceptedByPatient() || appointment.isCancelled() || appointment.isConfirmed())
+            throw new InvalidException("The Appointment has either not been accepted by the patient, has been cancelled, or is already confirmed.");
+        //confirm
+        appointment.setConfirmed(true);
+        appointmentRepository.save(appointment);
+    }
+
+    public ResponseEntity<Response> consultantGetAppointmentById(long id) throws InvalidException, InternalServerException {
+        //validate consultant entity associated with authenticated user
+        Staff consultant = staffService.validateAuthenticatedConsultant();
+        //validate related hospital of consultant
+        Hospital hospital = hospitalService.validateConsultantHospital(consultant);
+        //validate appointment
+        Appointment appointment = appointmentRepository.findByIdAndHospital_Id(id, hospital.getId());
+        if (appointment == null)
+            throw new InvalidException("Invalid appointment.");
+        if (appointment.getConsultantSpecialty() != null && !appointment.getConsultantSpecialty().equals(consultant.getSpecialty()))
+            throw new InvalidException("You can't view this appointment.");
+        if (appointment.getStaff() != null && !appointment.getStaff().getId().equals(consultant.getId()))
+            throw new InvalidException("You can't view this appointment.");
+
+        //build response
+        Map<String, Object> map = new HashMap<>();
+        map.put("appointment", appointment);
+        Response response = new Response(true, "Successful.", map);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    public ResponseEntity<Response> getAppointmentsOfConsultant() throws InternalServerException {
+        //validate authenticated consultant user
+        Staff consultant = staffService.validateAuthenticatedConsultant();
+        //validate associated hospital
+        Hospital hospital = hospitalService.validateConsultantHospital(consultant);
+        //fetch and validate appointments
+        List<Appointment> appointments = appointmentRepository.findByHospital_Id(hospital.getId());
+        if (appointments.isEmpty()) {
+            Map<String, Object> map = new HashMap<>();
+            map.put("appointments", new HashMap<>());
+            return new ResponseEntity<>(new Response(true, "Successful.", map), HttpStatus.OK);
+        }
+        Set<Appointment> appointmentSet = appointments
+                .stream()
+                .filter(appointment -> (appointment.getConsultantSpecialty() == null && appointment.getStaff() == null) //appt specialty is not null or null; appointment desired staff is not null or null
+                        || (appointment.getStaff() != null && appointment.getStaff().getId().equals(consultant.getId()))
+                        || (appointment.getConsultantSpecialty() != null && appointment.getConsultantSpecialty().equals(consultant.getSpecialty()))
+                )
+                .collect(Collectors.toSet());
+
+        //build response
+        Map<String, Object> map = new HashMap<>();
+        map.put("appointments", appointments);
+        Response response = new Response(true, "Successful.", map);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    /**
+     * Handles updating an appointment for a consultant
+     * @param id The appointment identifier
+     * @param updatedAppointment
+     * @param authUser
+     * @return
+     */
+    public Appointment consultantUpdateAppointment(Long id, UpdateAppointmentDTO updatedAppointment, User authUser) throws InvalidException {
+        //endpoint, Consultant role, consultant should be related to appointment, who can edit what, notifications when some fields are edited, OK response
+        //validate consultant
+        Staff consultant = staffService.getStaffByUserId(authUser.getId());
+        if (!consultant.getId().toString().equals(updatedAppointment.getDesiredConsultantId()))
+            throw new InvalidException("You aren't the Consultant handling the appointment.");
+        if(!consultant.getSpecialty().equals(updatedAppointment.getConsultantSpecialty()))
+            throw new InvalidException("Specialty and Consultant mismatch.");
+
+        //validate appointment
+        Appointment appointment = appointmentRepository.findByIdAndHospital_Id(id, consultant.getHospital().getId());
+        if (appointment == null)
+            throw new InvalidException("Invalid Appointment.");
+        if (appointment.isConfirmed() || appointment.isCancelled())
+            throw new InvalidException("Error. Can't update a confirmed or cancelled appointment.");
+        if (!appointment.getHospitalPatient().getId().toString().equals(updatedAppointment.getHospitalPatientId()))
+            throw new InvalidException("This Appointment belongs to a different patient.");
+        if (!appointment.getStaff().getId().equals(consultant.getId()))
+            throw new InvalidException("This Appointment has been assigned to another Consultant already.");
+
+        //update
+        appointment.setEmergency(updatedAppointment.isEmergency());
+        appointment.setPreferredDate(updatedAppointment.getPreferredDate());
+        appointment.setPreferredTime(updatedAppointment.getPreferredTime());
+        appointment.setConsultantSpecialty(updatedAppointment.getConsultantSpecialty());
+        appointment.setStaff(consultant);
+        appointmentRepository.save(appointment);
+
+        //ToDo: send in-app notif if Preferred date and time were indicated.
+        return appointment;
+    }
+
+    /**
+     * Handles updating an appointment for a patient
+     * @param id
+     * @param hospital_patient_id
+     * @param dto
+     * @param authUser
+     * @return
+     * @throws InvalidException
+     * @throws InternalServerException
+     */
+    public Appointment patientUpdateAppointment(Long id, Long hospital_patient_id, AppointmentDTO dto, User authUser) throws InvalidException, InternalServerException {
+        //Test cases: endpoint, role, valid appointment, auth user needs to match patient, updatable fields, OK response, marked as accepted
+        //validate appointment
+        HospitalPatient patient = hospitalPatientService.getHospitalPatient(hospital_patient_id, authUser.getId());
+        Appointment appointment = validateAppointment(id, patient.getId(), patient.getHospital().getId());
+        validateSpecialtyInAppointment(dto.getConsultantSpecialty(), patient.getHospital().getId());
+        Long consultantId = dto.getDesiredConsultantId();
+        Staff consultant = null;
+        if (consultantId != null) {
+            consultant = staffService.getConsultantById(consultantId);
+            if (consultant == null)
+                throw new IllegalArgumentException("Invalid Consultant.");
+            if (!consultant.getUser().isEnabled())
+                throw new IllegalArgumentException("Selected Consultant isn't registered fully on this platform.");
+            if (!consultant.getSpecialty().equals(dto.getConsultantSpecialty()))
+                throw new InvalidException("Specialty and Consultant mismatch.");
+        }
+
+        //update
+        appointment.setReason(dto.getReason());
+        appointment.setEmergency(dto.isEmergency());
+        appointment.setPreferredTime(dto.getPreferredTime());
+        appointment.setPreferredDate(dto.getPreferredDate());
+        appointment.setConsultantSpecialty(dto.getConsultantSpecialty());
+        appointment.setStaff(consultant);
+        appointment.setAcceptedByPatient(true);
+        return appointmentRepository.save(appointment);
     }
 }

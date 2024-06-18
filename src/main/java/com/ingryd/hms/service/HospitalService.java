@@ -53,6 +53,7 @@ public class HospitalService {
 
     /**
      * Registers a patient with a hospital.
+     *
      * @param hospitalId
      */
     @Transactional

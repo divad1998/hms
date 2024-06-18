@@ -24,4 +24,25 @@ public class HospitalPatientService {
 
         return hospitalPatient;
     }
+
+    public HospitalPatient getHospitalPatient(Long hospital_patient_id, Long user_Id) throws InvalidException {
+        HospitalPatient hospitalPatient = hospitalPatientRepository.findByIdAndUser_Id(hospital_patient_id, user_Id);
+        if (hospitalPatient == null)
+            throw new InvalidException("Invalid patient.");
+        return hospitalPatient;
+    }
+
+    public HospitalPatient getPatient(Long patientId, Long hospital_Id) throws InvalidException {
+        HospitalPatient patient = hospitalPatientRepository.findByIdAndHospital_Id(patientId, hospital_Id);
+        if (patient == null)
+            throw new InvalidException("Invalid patient.");
+        return patient;
+    }
+
+    public List<HospitalPatient> getHospitalPatients(Long userId) throws InvalidException {
+        List<HospitalPatient> list = hospitalPatientRepository.findByUser_Id(userId);
+        if (list.isEmpty())
+            throw new InvalidException("User is not registered with any hospital.");
+        return list;
+    }
 }

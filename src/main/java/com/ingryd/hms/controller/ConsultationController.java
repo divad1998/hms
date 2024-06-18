@@ -46,4 +46,12 @@ public class ConsultationController {
         Response response = new Response(true, "Successful.", map);
         return ResponseEntity.ok(response);
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Response> editConsultation(@PathVariable Long id, @RequestBody @Valid ConsultationDTO dto) throws InvalidException {
+        Consultation consultation = consultationService.editConsultation(id, dto);
+        Response response = Response.build(true,"Successful","consultation",consultation);
+        return ResponseEntity.ok(response);
+    }
+
 }

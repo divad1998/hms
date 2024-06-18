@@ -7,16 +7,12 @@ import com.ingryd.hms.exception.InternalServerException;
 import com.ingryd.hms.service.HospitalService;
 import com.ingryd.hms.service.StaffService;
 import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
-import lombok.NonNull;
-import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 @AllArgsConstructor
@@ -41,13 +37,21 @@ public class HospitalController {
         return hospitalService.getByHospitalName(hospitalName);
     }
 
-    @PostMapping("/{id}/patient-registration")
+    @PostMapping("/{hospitalId}/patient-registration")
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<?> registerPatientWithHospital (@PathVariable Long id) throws InternalServerException {
-        hospitalService.registerPatientWithHospital(id);
-        Response response = new Response(true, "Registration successful.", null);
-        return ResponseEntity.ok(response);
+    public ResponseEntity<?> registerPatientWithHospital (@PathVariable Long hospitalId) throws InternalServerException {
+        hospitalService.registerPatientWithHospital(hospitalId);
+        Response response = new Response(true, "Patient registered with hospital successfully", null);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
+//    @GetMapping
+//    public ResponseEntity<?> registerPatientWithHospital (@PathVariable Long id) {
+//        hospitalService.registerPatientWithHospital(id, hospitalId);
+//        Response response = new Response(true, "Registration successful.", null);
+//        return ResponseEntity.ok(response);
+//
+//    }
+
 
     @PostMapping("/{id}/patient-registration/hmo")
     public ResponseEntity<Response> registerPatientViaHMO(@PathVariable Long id, @NotEmpty(message = "hmo number can't be empty.") @RequestParam("hmo_number") String hmo_number) throws InternalServerException {

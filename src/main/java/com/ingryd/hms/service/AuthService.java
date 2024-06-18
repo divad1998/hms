@@ -8,6 +8,7 @@ import com.ingryd.hms.entity.User;
 import com.ingryd.hms.enums.Profession;
 import com.ingryd.hms.enums.Role;
 import com.ingryd.hms.exception.InternalServerException;
+import com.ingryd.hms.exception.InvalidException;
 import com.ingryd.hms.mapper.Mapper;
 import com.ingryd.hms.repository.StaffRepository;
 import com.ingryd.hms.repository.TokenRepository;
@@ -16,6 +17,7 @@ import com.ingryd.hms.repository.UserRepository;
 import com.ingryd.hms.security.JwtService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -28,9 +30,14 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AuthService {
+    private static final Logger log = LoggerFactory.getLogger(AuthService.class);
     private final HospitalRepository hospitalRepository;
     private final UserRepository userRepository;
     private final TokenService tokenService;
@@ -91,11 +98,25 @@ public class AuthService {
         mailService.sendEmailVerificationMail(user, savedToken.getValue());
     }
 
-    public void emailVerification(int value){
-        Token token = tokenRepository.findByValue(value).get();
-        User user = token.getUser();
-        user.setEnabled(true);
-        userRepository.save(user);
+    public void emailVerification(int value) throws Exception{
+        if (value > 0){
+            Optional<Token> tokenOptional = tokenRepository.findByValue(value);
+            if (tokenOptional.isEmpty())
+                throw new InvalidException("Invalid token.");
+            Token dbtoken = tokenOptional.get();
+            if (dbtoken.getExpiresAt().isBefore(LocalDateTime.now()))
+                throw new InvalidException("Expired token. Request for a new token.");
+
+            User user = dbtoken.getUser();
+            if (user == null) {
+                log.error("User not found for token with id: {}", dbtoken.getId());
+                throw new InternalServerException("Internal error. Kindly contact support.");
+            }
+            user.setEnabled(true);
+            userRepository.save(user);
+        } else {
+            throw new InvalidException("Token is required.");
+        }
     }
 
     public String login(LoginDTO loginDTO) {
@@ -165,5 +186,24 @@ public class AuthService {
     public User getAuthUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return (User) authentication.getPrincipal();
+    }
+
+    public void resendVerificationMail(String email) throws InvalidException {
+        //validation
+        User user = userRepository.findByEmail(email);
+        if (user == null)
+            throw new InvalidException("Invalid email.");
+        if (user.isEnabled())
+            throw new InvalidException("User is already verified.");
+
+        Optional<Token> tokenOptional = tokenService.fetchByUserId(user.getId());
+        if (tokenOptional.isPresent()) {
+            Token token = tokenOptional.get();
+            tokenService.delete(token);
+        }
+        int newToken = tokenService.generateToken();
+        Token savedToken = tokenService.saveToken(newToken, user);
+        //send verification mail
+        mailService.sendEmailVerificationMail(user, savedToken.getValue());
     }
 }

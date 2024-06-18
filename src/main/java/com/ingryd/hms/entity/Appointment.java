@@ -31,12 +31,16 @@ public class Appointment {
     private LocalTime preferredTime;
 
     @ManyToOne
-    @JoinColumn(name = "hospital_client_id", nullable = false)
+    @JoinColumn(name = "hospital_client_id", nullable = false, updatable = false)
     private HospitalPatient hospitalPatient;
 
     @Column(length = 50)
     @Length(max = 50, message = "Consultant's specialty can't exceed 50 characters.")
     private String consultantSpecialty;
+
+//    @ManyToOne
+//    @JoinColumn(name = "desired_staff_id")
+//    private Staff desiredConsultant;
 
     @ManyToOne
     @JoinColumn(name = "desired_staff_id")
@@ -45,6 +49,8 @@ public class Appointment {
     private boolean confirmed;
     private boolean acceptedByPatient;
     private boolean cancelled;
+
+//    private boolean confirmed;
 
     @ManyToOne
     @JoinColumn(name = "hospital_id", nullable = false)
