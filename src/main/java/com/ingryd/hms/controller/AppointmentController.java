@@ -16,6 +16,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -85,6 +86,13 @@ public class AppointmentController {
         Map<String, Object> map = new HashMap<>();
         map.put("appointment", updatedAppointment);
         Response response = new Response(true, "Successful.", map);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/patient_view")
+    public ResponseEntity<Response> getAppointmentsOfPatient() throws InvalidException {
+        List<Appointment> appointments = appointmentService.getAppointmentsOfPatient();
+        Response response = Response.build(true, "Successful.","appointments", appointments);
         return ResponseEntity.ok(response);
     }
 }

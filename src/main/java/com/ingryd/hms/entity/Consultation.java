@@ -35,13 +35,9 @@ public class Consultation {
     private String preDiagnosis;
 
     @Column(length = 1000)
-    @NotBlank(message = "Tests to be ran can't be blank.")
-    @Length(max = 1000, message = "Tests to be ran can't exceed 1000 characters.")
     private String testsToRun;
 
     @Column(length = 5000)
-    @NotBlank(message = "Prescription can't be blank.")
-    @Length(max = 5000, message = "Prescription can't exceed 5000 characters.")
     private String prescription;
 
     @Column(length = 500)

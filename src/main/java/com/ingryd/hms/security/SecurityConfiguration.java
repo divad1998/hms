@@ -10,6 +10,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -22,6 +23,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
 public class SecurityConfiguration {
 
     @Autowired
@@ -53,10 +55,12 @@ public class SecurityConfiguration {
                         .requestMatchers(HttpMethod.POST, "/appointments/confirm").hasAnyAuthority(Role.ADMIN.name(), Role.CONSULTANT.name())
                         .requestMatchers(HttpMethod.GET, "/appointments/consultant_view").hasAuthority(Role.CONSULTANT.name())
                         .requestMatchers(HttpMethod.GET, "/appointments/{id}/consultant_view").hasAuthority(Role.CONSULTANT.name())
+                        .requestMatchers(HttpMethod.GET, "/appointments/patient_view").hasAuthority(Role.PATIENT.name())
                         .requestMatchers(HttpMethod.POST, "/consultations").hasAnyAuthority(Role.CONSULTANT.name())
                         .requestMatchers(HttpMethod.GET, "/consultations").hasAuthority(Role.CONSULTANT.name())
                         .requestMatchers(HttpMethod.GET, "/consultations/{id}").hasAuthority(Role.CONSULTANT.name())
                         .requestMatchers(HttpMethod.PUT, "/consultations/{id}").hasAuthority(Role.CONSULTANT.name())
+                        .requestMatchers(HttpMethod.GET, "/consultations/incomplete/with_tests").hasAuthority(Role.LAB_SCIENTIST.name())
                         .requestMatchers(HttpMethod.GET, "/staff/{hospital_Id}/consultant_specialties").hasAuthority(Role.PATIENT.name())
                         .requestMatchers(HttpMethod.GET, "/staff/{hospital_Id}/consultants").hasAuthority(Role.PATIENT.name())
                         .requestMatchers(HttpMethod.PUT, "/lab_tests/{id}").hasAuthority(Role.LAB_SCIENTIST.name())

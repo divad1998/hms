@@ -107,7 +107,6 @@ public class ConsultationService {
     }
 
     public Consultation editConsultation(Long id, ConsultationDTO dto) throws InvalidException {
-        //Test cases: endpoint, Consultant role, valid id (get by id, consultant id, and hospital id), validate patient, update, OK response
         //validate consultation
         User authUser = authService.getAuthUser();
         Staff consultant = staffService.getStaffByUserId(authUser.getId());
@@ -138,5 +137,29 @@ public class ConsultationService {
 
     public List<Consultation> fetchConsultationsByPatientId(Long patientId) {
         return consultationRepository.findByHospitalPatient_Id(patientId);
+    }
+
+    public List<Consultation> fetchIncompleteConsultations() throws InternalServerException {
+        User authUser = authService.getAuthUser();
+        Staff labScientist = staffService.getStaffByUserId(authUser.getId());
+        if (labScientist == null) {
+            Logger logger = LoggerFactory.getLogger(this.getClass());
+            logger.error("User with id " + authUser.getId() + " is not related to any staff.");
+            throw new InternalServerException("Internal error. Kindly contact support.");
+        }
+        //fetch consultations
+        return consultationRepository
+                    .findByHospital_Id(labScientist.getHospital().getId())
+                    .stream()
+                    .filter(consultation -> consultation.getTestsToRun() != null && !consultation.isCompleted())
+                    .toList();
+    }
+
+    public Consultation fetchConsultation(Long id, Long consultantId, Long hospitalId) throws InvalidException {
+        Consultation consultation = consultationRepository.findByIdAndStaff_IdAndHospital_Id(id, consultantId, hospitalId);
+        if (consultation == null) {
+            throw new InvalidException("Invalid Consultation.");
+        }
+        return consultation;
     }
 }

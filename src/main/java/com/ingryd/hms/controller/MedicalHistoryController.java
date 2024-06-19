@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/medical-history")
+@RequestMapping("/medical_history")
 public class MedicalHistoryController {
     @Autowired
     private MedicalHistoryService medicalHistoryService;

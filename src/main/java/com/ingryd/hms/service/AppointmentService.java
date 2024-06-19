@@ -184,7 +184,6 @@ public class AppointmentService {
     }
 
     public void confirmAppointment(ConfirmAppointmentDto dto, User authUser) throws InvalidException {
-        //Test cases: endpoint, consultant role, validate appointment, preferred date and time should be set, auth consultant should be in-charge of appointment, appointment shouldn't be cancelled, or confirmed and should be accepted by patient
         Staff consultant = staffService.getStaffByUserId(authUser.getId());
         Appointment appointment = appointmentRepository.findByIdAndStaff_idAndHospital_id(Long.valueOf(dto.getAppointmentId()), consultant.getId(), consultant.getHospital().getId());
         if (appointment == null)
@@ -254,7 +253,6 @@ public class AppointmentService {
      * @return
      */
     public Appointment consultantUpdateAppointment(Long id, UpdateAppointmentDTO updatedAppointment, User authUser) throws InvalidException {
-        //endpoint, Consultant role, consultant should be related to appointment, who can edit what, notifications when some fields are edited, OK response
         //validate consultant
         Staff consultant = staffService.getStaffByUserId(authUser.getId());
         if (!consultant.getId().toString().equals(updatedAppointment.getDesiredConsultantId()))
@@ -279,6 +277,7 @@ public class AppointmentService {
         appointment.setPreferredTime(updatedAppointment.getPreferredTime());
         appointment.setConsultantSpecialty(updatedAppointment.getConsultantSpecialty());
         appointment.setStaff(consultant);
+        appointment.setAcceptedByPatient(false);
         appointmentRepository.save(appointment);
 
         //ToDo: send in-app notif if Preferred date and time were indicated.
@@ -296,7 +295,6 @@ public class AppointmentService {
      * @throws InternalServerException
      */
     public Appointment patientUpdateAppointment(Long id, Long hospital_patient_id, AppointmentDTO dto, User authUser) throws InvalidException, InternalServerException {
-        //Test cases: endpoint, role, valid appointment, auth user needs to match patient, updatable fields, OK response, marked as accepted
         //validate appointment
         HospitalPatient patient = hospitalPatientService.getHospitalPatient(hospital_patient_id, authUser.getId());
         Appointment appointment = validateAppointment(id, patient.getId(), patient.getHospital().getId());
@@ -322,5 +320,19 @@ public class AppointmentService {
         appointment.setStaff(consultant);
         appointment.setAcceptedByPatient(true);
         return appointmentRepository.save(appointment);
+    }
+
+    public List<Appointment> getAppointmentsOfPatient() throws InvalidException {
+        //is authUser registered as patient?
+        User authUser = authService.getAuthUser();
+        List<HospitalPatient> associatedPatients = hospitalPatientService.getHospitalPatients(authUser.getId());
+        //fetch appointments
+        List<Appointment> allAppointments = new ArrayList<>();
+        for (HospitalPatient patient : associatedPatients) {
+            List<Appointment> appointments = appointmentRepository.findByHospitalPatient_IdAndHospital_Id(patient.getId(), patient.getHospital().getId());
+            if (!appointments.isEmpty())
+                allAppointments.addAll(appointments);
+        }
+        return allAppointments;
     }
 }

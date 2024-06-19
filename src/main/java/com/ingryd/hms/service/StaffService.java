@@ -14,6 +14,8 @@ import com.ingryd.hms.repository.StaffRepository;
 import com.ingryd.hms.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -77,8 +79,6 @@ public class StaffService {
      * @throws InternalServerException
      */
     public Set<String> getAllConsultantSpecialties(Long hospital_Id) throws InvalidException, InternalServerException {
-        //Test Cases:
-        //valid hospital; has staff; no specialists;
         //validate hospital
         Hospital hospital = hospitalService.validateHospital(hospital_Id);
         //hospital has consultants?

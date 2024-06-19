@@ -54,4 +54,10 @@ public class ConsultationController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/incomplete/with_tests")
+    public ResponseEntity<Response> fetchIncompleteConsultations() throws InternalServerException {
+        List<Consultation> consultations = consultationService.fetchIncompleteConsultations();
+        Response response = Response.build(true,"Successful","consultations", consultations);
+        return ResponseEntity.ok(response);
+    }
 }

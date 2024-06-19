@@ -5,12 +5,12 @@ import com.ingryd.hms.entity.Consultation;
 import com.ingryd.hms.entity.LaboratoryTest;
 import com.ingryd.hms.entity.Staff;
 import com.ingryd.hms.entity.User;
+import com.ingryd.hms.exception.InternalServerException;
 import com.ingryd.hms.exception.InvalidException;
 import com.ingryd.hms.repository.LabTestRepository;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,8 +23,7 @@ public class LabTestService {
     private final StaffService staffService;
     private final ConsultationService consultationService;
 
-    public void createLabTest(LabTestDTO testDTO) throws InvalidException {
-        //Test cases: endpoint, role, validate consultation id, consultation should be incomplete, created
+    public LaboratoryTest createLabTest(LabTestDTO testDTO) throws InvalidException {
         //validate consultation
         User authUser = authService.getAuthUser();
         Staff labScientist = staffService.getStaffByUserId(authUser.getId());
@@ -40,12 +39,10 @@ public class LabTestService {
         labTest.setResult(testDTO.getResult());
         labTest.setStaff(labScientist);
 
-        testRepository.save(labTest);
+        return testRepository.save(labTest);
     }
 
     public LaboratoryTest editTest(Long id, LabTestDTO dto) throws InvalidException {
-        //Test cases:
-        //endpoint, role, valid test (get by id, authScientist, hospital id), valid consultation id, OK response
         //validate test
         User authUser = authService.getAuthUser();
         Staff labScientist = staffService.getStaffByUserId(authUser.getId());
@@ -80,5 +77,17 @@ public class LabTestService {
 
     public List<LaboratoryTest> fetchLabTests(Long consultationId) {
         return testRepository.findByConsultation_Id(consultationId);
+    }
+
+    public List<LaboratoryTest> fetchTests(Long consultationId) throws InternalServerException, InvalidException {
+        User authUser = authService.getAuthUser();
+        Staff consultant = staffService.getStaffByUserId(authUser.getId());
+        if (consultant == null) {
+            Logger logger = LoggerFactory.getLogger(this.getClass());
+            logger.error("User with id " + authUser.getId() + " is not related to any staff.");
+            throw new InternalServerException("Internal error. Kindly contact support.");
+        }
+        Consultation consultation = consultationService.fetchConsultation(consultationId, consultant.getId(),  consultant.getHospital().getId());
+        return testRepository.findByConsultation_Id(consultation.getId());
     }
 }
