@@ -44,14 +44,6 @@ public class HospitalController {
         Response response = new Response(true, "Patient registered with hospital successfully", null);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
-//    @GetMapping
-//    public ResponseEntity<?> registerPatientWithHospital (@PathVariable Long id) {
-//        hospitalService.registerPatientWithHospital(id, hospitalId);
-//        Response response = new Response(true, "Registration successful.", null);
-//        return ResponseEntity.ok(response);
-//
-//    }
-
 
     @PostMapping("/{id}/patient-registration/hmo")
     public ResponseEntity<Response> registerPatientViaHMO(@PathVariable Long id, @NotEmpty(message = "hmo number can't be empty.") @RequestParam("hmo_number") String hmo_number) throws InternalServerException {
