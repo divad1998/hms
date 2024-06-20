@@ -20,27 +20,15 @@ public class LaboratoryTest {
     private Consultation consultation;
 
     @Column(nullable = false, length = 50)
-    @NotBlank(message = "Sample cannot be blank.")
-    @NotNull(message = "Sample is required.")
-    @Length(max = 50, message = "Sample cannot exceed 50 characters.")
     private String sample;
 
     @Column(nullable = false, length = 50)
-    @NotBlank(message = "Lab unit cannot be blank.")
-    @NotNull(message = "Lab unit is required.")
-    @Length(max = 50, message = "Lab unit cannot exceed 50 characters.")
     private String labUnit;
 
     @Column(nullable = false)
-    @NotBlank(message = "Investigation cannot be blank.")
-    @NotNull(message = "Investigation is required.")
-    @Length(max = 255, message = "Investigation can't exceed 255 characters.")
     private String investigation;
 
     @Column(nullable = false, length = 2000)
-    @NotBlank(message = "Result cannot be blank.")
-    @NotNull(message = "Result is required.")
-    @Length(max = 2000, message = "Result can't exceed 2000 characters")
     private String result;
 
     @ManyToOne

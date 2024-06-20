@@ -53,7 +53,7 @@ public class User implements UserDetails {
 
     public User() {}
 
-
+    @PrePersist
     public void onCreate() {
         this.createdAt = LocalDateTime.now();
     }
@@ -90,7 +90,7 @@ public class User implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return enabled;
     }
 
     public void setPassword(String password) {

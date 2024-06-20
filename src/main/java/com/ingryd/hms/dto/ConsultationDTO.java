@@ -15,7 +15,8 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Builder
 public class ConsultationDTO {
-    private long hospital_patient_id;
+    @NotEmpty(message = "Patient is required.")
+    private String hospital_patient_id;
 
 //    @NotEmpty(message = "Consultant id must contain a non-whitespace value.")
 //    private long consultant_id;

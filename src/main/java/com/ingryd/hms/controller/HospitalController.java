@@ -10,6 +10,7 @@ import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -43,26 +44,6 @@ public class HospitalController {
         hospitalService.registerPatientWithHospital(hospitalId);
         Response response = new Response(true, "Patient registered with hospital successfully", null);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
-    }
-//    @GetMapping
-//    public ResponseEntity<?> registerPatientWithHospital (@PathVariable Long id) {
-//        hospitalService.registerPatientWithHospital(id, hospitalId);
-//        Response response = new Response(true, "Registration successful.", null);
-//        return ResponseEntity.ok(response);
-//
-//    }
-
-
-    @GetMapping("/consultants")
-    public ResponseEntity<List<Staff>> getConsultantsBySpecialty(@RequestParam String specialty) {
-        List<Staff> consultants = hospitalService.getConsultantsBySpecialty(specialty);
-        return ResponseEntity.ok(consultants);
-    }
-
-    @GetMapping("{hospital_Id}/consultant-specialties")
-    public ResponseEntity<Set<String>> getAllConsultantSpecialties(@PathVariable Long hospital_Id) {
-        Set<String> specialties = staffService.getAllConsultantSpecialties(hospital_Id);
-        return ResponseEntity.ok(specialties);
     }
 
     @PostMapping("/{id}/patient-registration/hmo")

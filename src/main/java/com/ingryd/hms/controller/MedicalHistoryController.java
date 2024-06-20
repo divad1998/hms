@@ -2,6 +2,8 @@ package com.ingryd.hms.controller;
 
 
 import com.ingryd.hms.dto.MedicalHistoryDto;
+import com.ingryd.hms.dto.Response;
+import com.ingryd.hms.exception.InvalidException;
 import com.ingryd.hms.service.MedicalHistoryService;
 import org.apache.catalina.LifecycleState;
 import org.apache.catalina.authenticator.SpnegoAuthenticator;
@@ -17,22 +19,17 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/medical-history")
+@RequestMapping("/medical_history")
 public class MedicalHistoryController {
     @Autowired
     private MedicalHistoryService medicalHistoryService;
 
-    @GetMapping("patient/{patientId}")
-    public ResponseEntity<List<MedicalHistoryDto>> getMedicalHistoryByPatientId (@PathVariable Long patientId){
-
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String currentPrincipalName = authentication.getName();
-
-        List<MedicalHistoryDto> histories = medicalHistoryService.getMedicalHistoryByPatientId(patientId);
-        return ResponseEntity.ok(histories);
+    @GetMapping
+    public ResponseEntity<Response> patientGetMedicalHistory() throws InvalidException {
+        List<MedicalHistoryDto> medicalHistory = medicalHistoryService.patientGetMedicalHistory();
+        //response
+        Response response = Response.build(true, "Successful.", "medical_history", medicalHistory);
+        return ResponseEntity.ok(response);
 
     }
-
-
-
 }
