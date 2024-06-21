@@ -23,7 +23,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
-@EnableMethodSecurity
 public class SecurityConfiguration {
 
     @Autowired
@@ -72,7 +71,9 @@ public class SecurityConfiguration {
                         .requestMatchers(HttpMethod.GET, "/staff/{hospital_Id}/consultant_specialties").hasAuthority(Role.PATIENT.name())
                         .requestMatchers(HttpMethod.GET, "/staff/{hospital_Id}/consultants").hasAuthority(Role.PATIENT.name())
                         .requestMatchers(HttpMethod.GET, "/staff/{hospital_Id}/consultants/no_specialty").hasAuthority(Role.PATIENT.name())
+                        .requestMatchers(HttpMethod.POST, "/lab_tests").hasAuthority(Role.LAB_SCIENTIST.name())
                         .requestMatchers(HttpMethod.PUT, "/lab_tests/{id}").hasAuthority(Role.LAB_SCIENTIST.name())
+                        .requestMatchers(HttpMethod.GET, "/lab_tests/{consultation_id}").hasAuthority(Role.CONSULTANT.name())
                         .requestMatchers(HttpMethod.GET, "/medical_history").hasAuthority(Role.PATIENT.name())
                         .anyRequest().authenticated())
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);

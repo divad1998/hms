@@ -25,7 +25,6 @@ public class LabTestController {
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('LAB_SCIENTIST')")
     public ResponseEntity<Response> createLabTest(@RequestBody @Valid LabTestDTO testDTO) throws InvalidException {
         LaboratoryTest test = testService.createLabTest(testDTO);
         //response
@@ -42,7 +41,6 @@ public class LabTestController {
     }
 
     @GetMapping("/{consultation_id}")
-    @PreAuthorize("hasRole('CONSULTANT')")
     public ResponseEntity<Response> fetchTestsByConsultationId(@PathVariable Long consultation_id) throws InternalServerException, InvalidException {
         List<LaboratoryTest> laboratoryTests = testService.fetchTests(consultation_id);
         //response

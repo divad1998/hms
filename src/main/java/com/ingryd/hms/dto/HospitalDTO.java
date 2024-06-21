@@ -66,13 +66,13 @@ public class HospitalDTO {
     @NotNull(message = "Email can't be null.")
     @Length(max = 50, message = "Max length of email is 50 characters.")
     @Email(message = "Invalid email format.")
-    private String email;
+    private String hospital_email;
 
     @NotBlank(message = "Password can't be blank.")
     @NotNull(message = "Password can't be null.")
     @Pattern(regexp = "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[~@$#!%^*?&()_+={}|:;])[A-Za-z\\d~@$#!%^*?&()_+={}|:;]{8,}$",
             message = "Password must contain at least one capitalized alphabet, small alphabet, one digit, and one special character.")
-    private String password;
+    private String hospital_password;
 
     private LocalDateTime createdAt;
 }

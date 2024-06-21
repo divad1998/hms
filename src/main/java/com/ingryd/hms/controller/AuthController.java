@@ -62,10 +62,8 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody @Valid LoginDTO loginDTO) {
-        String authToken = authService.login(loginDTO);
+        Map<String, Object> data = authService.login(loginDTO);
         //build response
-        Map<String, Object> data = new HashMap<>();
-        data.put("authToken", authToken);
         Response response = new Response(true, "Login successful.", data);
         return ResponseEntity.ok(response);
     }

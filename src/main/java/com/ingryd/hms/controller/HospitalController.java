@@ -55,11 +55,11 @@ public class HospitalController {
         Response response = new Response(true, "Registration successful.", null);
         return ResponseEntity.status(201).body(response);
     }
+
     @GetMapping("/hospital_patients/{hospital_id}")
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'CONSULTANT')")
-    public ResponseEntity<Response> getAllHospitalPatient (@PathVariable Long hospital_id) {
-        List<HospitalPatient> patientList =  patientService.getAllHospitalPatient(hospital_id);
-        Response response = Response.build(true, "Successful", "Patient", patientList);
+    public ResponseEntity<Response> getAllHospitalPatients (@PathVariable Long hospital_id) {
+        List<HospitalPatient> patientList =  patientService.getAllHospitalPatients(hospital_id);
+        Response response = Response.build(true, "Successful.", "Patients", patientList);
         return ResponseEntity.ok(response);
     }
 }

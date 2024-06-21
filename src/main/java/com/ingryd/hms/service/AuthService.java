@@ -31,13 +31,15 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class AuthService {
-    private static final Logger log = LoggerFactory.getLogger(AuthService.class);
+    //private static final Logger log = LoggerFactory.getLogger(AuthService.class);
     private final HospitalRepository hospitalRepository;
     private final UserRepository userRepository;
     private final TokenService tokenService;
@@ -56,8 +58,8 @@ public class AuthService {
         adminUser.setPhoneNumber(hospitalDTO.getContactNumber());
         adminUser.setContactAddress(hospitalDTO.getAddress());
         adminUser.setRole(Role.ADMIN);
-        adminUser.setPassword(hospitalDTO.getPassword());
-        adminUser.setEmail(hospitalDTO.getEmail());
+        adminUser.setPassword(hospitalDTO.getHospital_password());
+        adminUser.setEmail(hospitalDTO.getHospital_email());
         User savedUser = userRepository.save(adminUser);
 
         //save hospital
@@ -70,7 +72,7 @@ public class AuthService {
         hospital.setState(hospitalDTO.getState());
         hospital.setHfrn(hospitalDTO.getHfrn());
         hospital.setContactNumber(hospitalDTO.getContactNumber());
-        hospital.setEmail(hospitalDTO.getEmail());
+        hospital.setEmail(hospitalDTO.getHospital_email());
         hospital.setWebsite(hospitalDTO.getWebsite());
         hospital.setRegisteredBy(savedUser);
         hospitalRepository.save(hospital);
@@ -119,7 +121,7 @@ public class AuthService {
         }
     }
 
-    public String login(LoginDTO loginDTO) {
+    public Map<String, Object> login(LoginDTO loginDTO) {
         try {
             //is email valid?
             if (userRepository.findByEmail(loginDTO.getEmail()) == null) {
@@ -129,7 +131,13 @@ public class AuthService {
             UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(loginDTO.getEmail(), loginDTO.getPassword());
             Authentication authentication = authManager.authenticate(token);
             //authentication success -> generate jwt token
-            return jwtService.createToken((User) authentication.getPrincipal());
+            User user = (User) authentication.getPrincipal();
+            String authToken = jwtService.createToken(user);
+            Map<String, Object> data = new HashMap<>();
+            data.put("user", user); data.put("authToken", authToken);
+            return data;
+
+
         } catch (AuthenticationException e) {
             throw e;
         }

@@ -48,7 +48,7 @@ public class HospitalPatientService {
         return list;
     }
 
-    public List<HospitalPatient> getAllHospitalPatient (Long hospital_id) {
+    public List<HospitalPatient> getAllHospitalPatients (Long hospital_id) {
         List<HospitalPatient> patientList = hospitalPatientRepository.findAll();
 
         return patientList
