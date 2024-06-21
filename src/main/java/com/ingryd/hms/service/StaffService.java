@@ -32,12 +32,9 @@ import java.util.stream.Collectors;
 public class StaffService {
     private final StaffRepository staffRepository;
     private final UserRepository userRepository;
-    private final HospitalRepository hospitalRepository;
-    private final PasswordEncoder passwordEncoder;
-    private final MailService mailService;
-    private final TokenService tokenService;
     private final AuthService authService;
     private final HospitalService hospitalService;
+    private final HospitalPatientService hospitalPatientService;
 
     public boolean isAdminUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -50,7 +47,7 @@ public class StaffService {
             return false;
         }
     }
-  
+
     public List<Staff> getConsultantsBySpecialty(String specialty, Long hospital_Id) {
         //Test cases:
         //valid hospital id in request, PATIENT, endpoint, case sensitivity, OK response
@@ -108,6 +105,24 @@ public class StaffService {
 
         return filtered;
     }
+    /**
+     * Fetch consultants with no specialty. The consultants must be enabled.
+     * @param hospital_id
+     * @return
+     */
+    public List<Staff> getNullSpecialtyConsultants (Long hospital_id) throws InternalServerException, InvalidException {
+        //validate hospital
+        Hospital hospital = hospitalService.validateHospital(hospital_id);
+        //auth user needs to be a reg'd patient of the hospital
+        User authUser = authService.getAuthUser();
+//        hospitalPatientService.isRegisteredWithHospital(authUser.getId(), hospital.getId());
+        //fetch consultants
+        List<Staff> hospitalStaff = staffRepository.findByHospital_IdAndProfession(hospital_id, Profession.MEDICAL_DOCTOR);
+        return hospitalStaff.stream()
+                                    .filter(consultant -> consultant.getUser().isEnabled())
+                                    .filter(consultant -> Objects.equals(consultant.getSpecialty(), null))
+                                    .collect(Collectors.toList());
+    }
 
     /**
      * Checks whether auth user is linked to a valid consultant.
@@ -122,4 +137,5 @@ public class StaffService {
         }
         return consultant;
     }
+
 }

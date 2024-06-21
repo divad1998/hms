@@ -48,14 +48,6 @@ public class HospitalController {
         Response response = new Response(true, "Patient registered with hospital successfully", null);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
-//    @GetMapping
-//    public ResponseEntity<?> registerPatientWithHospital (@PathVariable Long id) {
-//        hospitalService.registerPatientWithHospital(id, hospitalId);
-//        Response response = new Response(true, "Registration successful.", null);
-//        return ResponseEntity.ok(response);
-//
-//    }
-
 
     @PostMapping("/{id}/patient-registration/hmo")
     public ResponseEntity<Response> registerPatientViaHMO(@PathVariable Long id, @NotEmpty(message = "hmo number can't be empty.") @RequestParam("hmo_number") String hmo_number) throws InternalServerException {
@@ -64,7 +56,7 @@ public class HospitalController {
         return ResponseEntity.status(201).body(response);
     }
     @GetMapping("/hospital_patients/{hospital_id}")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('CONSULTANT')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'CONSULTANT')")
     public ResponseEntity<Response> getAllHospitalPatient (@PathVariable Long hospital_id) {
         List<HospitalPatient> patientList =  patientService.getAllHospitalPatient(hospital_id);
         Response response = Response.build(true, "Successful", "Patient", patientList);

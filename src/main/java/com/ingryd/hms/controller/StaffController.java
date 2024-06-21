@@ -9,6 +9,7 @@ import com.ingryd.hms.service.StaffService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -37,6 +38,15 @@ public class StaffController {
         Map<String, Object> map = new HashMap<>();
         map.put("specialties", specialties);
         Response response = new Response(true, "Successful.", map);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/{hospital_Id}/consultants/no_specialty")
+    //@PreAuthorize("hasRole('PATIENT')")
+    public ResponseEntity<Response> getNullSpecialtyConsultants (@PathVariable Long hospital_Id) throws InternalServerException, InvalidException {
+        List<Staff> consultants = staffService.getNullSpecialtyConsultants(hospital_Id);
+        //build response
+        Response response = Response.build(true, "Successful.", "consultants", consultants);
         return ResponseEntity.ok(response);
     }
 }

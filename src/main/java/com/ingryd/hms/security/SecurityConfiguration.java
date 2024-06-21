@@ -51,7 +51,7 @@ public class SecurityConfiguration {
                         .requestMatchers(HttpMethod.POST, "/hospitals/hospital_patients/{hospital_id}").hasAnyAuthority(Role.ADMIN.name(), Role.CONSULTANT.name())
                         .requestMatchers(HttpMethod.POST, "/appointments/{hospital_Id}/request").hasAuthority(Role.PATIENT.name())
                         .requestMatchers(HttpMethod.POST, "/consultations").hasAnyAuthority(Role.CONSULTANT.name())
-                        .requestMatchers(HttpMethod.GET, "/medical-history/patient/{patientId}").hasAnyAuthority(Role.PATIENT.name(), Role.CONSULTANT.name())
+                        .requestMatchers(HttpMethod.GET, "/medical-history/patient/{patientId}").hasAnyAuthority(Role.ADMIN.name(), Role.CONSULTANT.name())
                         .requestMatchers(HttpMethod.GET, "/appointment/consultants/{hospital_id}").hasAuthority(Role.PATIENT.name())
 
                         .requestMatchers(HttpMethod.POST, "/hospitals/{id}/patient-registration/hmo").hasAuthority(Role.PATIENT.name())
@@ -71,6 +71,7 @@ public class SecurityConfiguration {
                         .requestMatchers(HttpMethod.GET, "/consultations/incomplete/with_tests").hasAuthority(Role.LAB_SCIENTIST.name())
                         .requestMatchers(HttpMethod.GET, "/staff/{hospital_Id}/consultant_specialties").hasAuthority(Role.PATIENT.name())
                         .requestMatchers(HttpMethod.GET, "/staff/{hospital_Id}/consultants").hasAuthority(Role.PATIENT.name())
+                        .requestMatchers(HttpMethod.GET, "/staff/{hospital_Id}/consultants/no_specialty").hasAuthority(Role.PATIENT.name())
                         .requestMatchers(HttpMethod.PUT, "/lab_tests/{id}").hasAuthority(Role.LAB_SCIENTIST.name())
                         .requestMatchers(HttpMethod.GET, "/medical_history").hasAuthority(Role.PATIENT.name())
                         .anyRequest().authenticated())

@@ -2,6 +2,7 @@ package com.ingryd.hms.controller;
 
 import com.ingryd.hms.dto.ConsultationDTO;
 import com.ingryd.hms.dto.Response;
+import com.ingryd.hms.entity.Staff;
 import com.ingryd.hms.entity.Consultation;
 import com.ingryd.hms.exception.InternalServerException;
 import com.ingryd.hms.exception.InvalidException;
