@@ -4,11 +4,13 @@ import com.ingryd.hms.dto.ForgottenPasswordDto;
 import com.ingryd.hms.dto.PasswordDTO;
 import com.ingryd.hms.entity.Token;
 import com.ingryd.hms.entity.User;
+import com.ingryd.hms.exception.InvalidException;
 import com.ingryd.hms.repository.TokenRepository;
 import com.ingryd.hms.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.security.InvalidAlgorithmParameterException;
 import java.util.Optional;
 
 @Service
@@ -36,15 +38,14 @@ public class PasswordService {
 
     public void forgottenPassword(String email) throws Exception{
         User user = userRepository.findByEmail(email);
-        System.out.println(email);
-        System.out.println(user);
-        if (user != null && user.isEnabled()) {
-            System.out.println("also here!");
-            int token = tokenService.generateToken();
-            tokenService.saveToken(token, user);
-            System.out.println(STR."Token: \{token}"); //test
-            mailService.sendResetPasswordMail(user, token);
-        }
+        if (user == null)
+            throw new InvalidException("Invalid email.");
+        if (!user.isEnabled())
+            throw new InvalidException("Only verified users are allowed.");
+
+        int token = tokenService.generateToken();
+        tokenService.saveToken(token, user);
+        mailService.sendResetPasswordMail(user, token);
     }
 
     public void passwordReset(PasswordDTO dto) throws Exception{

@@ -2,6 +2,7 @@ package com.ingryd.hms.controller;
 
 import com.ingryd.hms.dto.*;
 import com.ingryd.hms.exception.InternalServerException;
+import com.ingryd.hms.exception.InvalidException;
 import com.ingryd.hms.service.AuthService;
 import com.ingryd.hms.service.PasswordService;
 
@@ -42,20 +43,18 @@ public class AuthController {
     }
 
     @PostMapping("/patients/signup")
-    public ResponseEntity<?> clientSignup(@RequestBody @Valid UserDTO userDTO) throws Exception {
-        authService.clientSignup(userDTO);
+    public ResponseEntity<?> patientSignup(@RequestBody @Valid UserDTO userDTO) throws Exception {
+        authService.patientSignup(userDTO);
         //build response on success
         Response response = new Response(true, "Signed up. Check mailbox to verify email quickly.", null);
         Link loginLink = WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(this.getClass()).login(null)).withRel("login");
-        Link resendLink = WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(this.getClass()).resendVerificationMail()).withRel("resend_verification_mail");
+        Link resendLink = WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(this.getClass()).resendVerificationMail(null)).withRel("resend_verification_mail");
         response.add(loginLink, resendLink);
         return ResponseEntity.status(201).body(Optional.of(response));
     }
 
-
-
-    @PostMapping("/email_verification/{token}")
-    public ResponseEntity<?> verifyEmail(@PathVariable @Valid int token) throws Exception {
+    @GetMapping("/email_verification/{token}")
+    public ResponseEntity<?> verifyEmail(@PathVariable int token) throws Exception {
         authService.emailVerification(token);
         Response response = new Response(true, "email verified.", null);
         return ResponseEntity.ok(response);
@@ -71,9 +70,11 @@ public class AuthController {
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/email_verification/repeat")
-    public ResponseEntity<?> resendVerificationMail() {
-        return ResponseEntity.ok().build();
+    @GetMapping("/email_verification/resend_token/{email}")
+    public ResponseEntity<?> resendVerificationMail(@PathVariable String email) throws InvalidException {
+        authService.resendVerificationMail(email);
+        Response response = new Response(true, "The verification mail is on its way.", null);
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/logout")
@@ -84,9 +85,9 @@ public class AuthController {
     }
   
     @PostMapping("/forgotten_password/{email}")
-    public ResponseEntity<?> forgottenPassword(@PathVariable @Valid String email) throws Exception {
+    public ResponseEntity<?> forgottenPassword(@PathVariable String email) throws Exception {
         passwordService.forgottenPassword(email);
-        Response response = new Response(true, "A token has been sent to your email address.", null);
+        Response response = new Response(true, "A link is on its way to your email address.", null);
         return ResponseEntity.ok(response);
     }
 

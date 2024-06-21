@@ -6,6 +6,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;
@@ -13,7 +14,8 @@ import org.hibernate.validator.constraints.Length;
 @Data
 public class LabTestDTO {
 
-    private Consultation consultation;
+    @NotEmpty(message = "Consultation is required.")
+    private String consultation_id;
 
     @NotBlank(message = "Sample cannot be blank.")
     @NotNull(message = "Sample is required.")
@@ -35,5 +37,5 @@ public class LabTestDTO {
     @Length(max = 2000, message = "Result can't exceed 2000 characters")
     private String result;
 
-    private Staff staff;
+    //private Staff staff;
 }

@@ -28,7 +28,7 @@ public class Appointment {
         this.staffService = staffService;
     }
 
-    @GetMapping("/all")
+    /*@GetMapping("/all")
     public ResponseEntity<List<com.ingryd.hms.entity.Appointment>> getAllAppointment(){
         return appointmentService.getAllAppointment();
     }
@@ -36,7 +36,7 @@ public class Appointment {
     @GetMapping("{id}")
     public ResponseEntity<com.ingryd.hms.entity.Appointment> getAppointmentById(@PathVariable long id){
         return appointmentService.findById(id);
-    }
+    }*/
 
     @GetMapping("/consultants/{hospital_id}")
     @PreAuthorize("hasRole('PATIENT')")

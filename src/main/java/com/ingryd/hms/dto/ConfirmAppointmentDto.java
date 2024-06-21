@@ -1,13 +1,11 @@
 package com.ingryd.hms.dto;
 
+import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;
 
 @Data
 public class ConfirmAppointmentDto {
 
-    private Long appointmentId;
-    private boolean confirmed;
-
-   private boolean issued;
-
+    @NotEmpty(message = "Appointment can't be empty.")
+    private String appointmentId;
 }

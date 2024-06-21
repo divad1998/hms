@@ -31,7 +31,7 @@ public class Appointment {
     private LocalTime preferredTime;
 
     @ManyToOne
-    @JoinColumn(name = "hospital_client_id", nullable = false)
+    @JoinColumn(name = "hospital_client_id", nullable = false, updatable = false)
     private HospitalPatient hospitalPatient;
 
     @Column(length = 50)
