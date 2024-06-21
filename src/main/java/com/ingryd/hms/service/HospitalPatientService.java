@@ -7,6 +7,8 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -46,10 +48,13 @@ public class HospitalPatientService {
         return list;
     }
 
-    public boolean isRegisteredWithHospital(Long userId, Long hospital_id) throws InvalidException {
-        List<HospitalPatient> patients = hospitalPatientRepository.findByUser_IdAndHospital_Id(userId, hospital_id);
-        if (patients.isEmpty())
-            throw new InvalidException("You aren't registered with this hospital.");
-        return true;
+    public List<HospitalPatient> getAllHospitalPatient (Long hospital_id) {
+        List<HospitalPatient> patientList = hospitalPatientRepository.findAll();
+
+        return patientList
+                .stream()
+                .filter(list -> list.getUser().isEnabled())
+                .filter(list -> Objects.equals(list.getHospital().getId(), hospital_id))
+                .collect(Collectors.toList());
     }
 }

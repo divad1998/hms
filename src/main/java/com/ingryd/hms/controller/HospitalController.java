@@ -2,8 +2,10 @@ package com.ingryd.hms.controller;
 
 import com.ingryd.hms.dto.Response;
 import com.ingryd.hms.entity.Hospital;
+import com.ingryd.hms.entity.HospitalPatient;
 import com.ingryd.hms.entity.Staff;
 import com.ingryd.hms.exception.InternalServerException;
+import com.ingryd.hms.service.HospitalPatientService;
 import com.ingryd.hms.service.HospitalService;
 import com.ingryd.hms.service.StaffService;
 import jakarta.validation.constraints.NotEmpty;
@@ -21,6 +23,7 @@ import java.util.Set;
 @RequestMapping("/hospitals")
 public class HospitalController {
     private final HospitalService hospitalService;
+    private final HospitalPatientService patientService;
     private final StaffService staffService;
 
     @GetMapping
@@ -51,5 +54,12 @@ public class HospitalController {
         hospitalService.registerPatientWithHMO(id, hmo_number);
         Response response = new Response(true, "Registration successful.", null);
         return ResponseEntity.status(201).body(response);
+    }
+    @GetMapping("/hospital_patients/{hospital_id}")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'CONSULTANT')")
+    public ResponseEntity<Response> getAllHospitalPatient (@PathVariable Long hospital_id) {
+        List<HospitalPatient> patientList =  patientService.getAllHospitalPatient(hospital_id);
+        Response response = Response.build(true, "Successful", "Patient", patientList);
+        return ResponseEntity.ok(response);
     }
 }

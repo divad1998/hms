@@ -47,7 +47,7 @@ public class StaffService {
             return false;
         }
     }
-  
+
     public List<Staff> getConsultantsBySpecialty(String specialty, Long hospital_Id) {
         //Test cases:
         //valid hospital id in request, PATIENT, endpoint, case sensitivity, OK response
@@ -93,6 +93,18 @@ public class StaffService {
         return specialties;
     }
 
+    public List<Staff> getNullSpecialistConsultant (Long hospital_id) {
+        List<Staff> hospitalStaff = staffRepository.findByHospital_Id(hospital_id);
+
+        List<Staff> filtered = hospitalStaff.stream()
+                .filter(staff -> staff.getUser().isEnabled())
+                .filter(staff -> Objects.equals(staff.getSpecialty(), null))
+                .collect(Collectors.toList());
+
+        System.out.println(filtered.size());
+
+        return filtered;
+    }
     /**
      * Fetch consultants with no specialty. The consultants must be enabled.
      * @param hospital_id
@@ -103,7 +115,7 @@ public class StaffService {
         Hospital hospital = hospitalService.validateHospital(hospital_id);
         //auth user needs to be a reg'd patient of the hospital
         User authUser = authService.getAuthUser();
-        hospitalPatientService.isRegisteredWithHospital(authUser.getId(), hospital.getId());
+//        hospitalPatientService.isRegisteredWithHospital(authUser.getId(), hospital.getId());
         //fetch consultants
         List<Staff> hospitalStaff = staffRepository.findByHospital_IdAndProfession(hospital_id, Profession.MEDICAL_DOCTOR);
         return hospitalStaff.stream()

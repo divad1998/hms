@@ -46,6 +46,14 @@ public class SecurityConfiguration {
                         .requestMatchers(HttpMethod.POST, "/auth/reset_password").permitAll()
                         .requestMatchers(HttpMethod.GET, "/auth/email_verification/{token}").permitAll()
                         .requestMatchers(HttpMethod.POST, "/hospitals/{id}/patient-registration").hasAuthority(Role.PATIENT.name())
+
+                        .requestMatchers(HttpMethod.POST, "/hospitals/{id}/patient-registration/hms").hasAuthority(Role.PATIENT.name())
+                        .requestMatchers(HttpMethod.POST, "/hospitals/hospital_patients/{hospital_id}").hasAnyAuthority(Role.ADMIN.name(), Role.CONSULTANT.name())
+                        .requestMatchers(HttpMethod.POST, "/appointments/{hospital_Id}/request").hasAuthority(Role.PATIENT.name())
+                        .requestMatchers(HttpMethod.POST, "/consultations").hasAnyAuthority(Role.CONSULTANT.name())
+                        .requestMatchers(HttpMethod.GET, "/medical-history/patient/{patientId}").hasAnyAuthority(Role.ADMIN.name(), Role.CONSULTANT.name())
+                        .requestMatchers(HttpMethod.GET, "/appointment/consultants/{hospital_id}").hasAuthority(Role.PATIENT.name())
+
                         .requestMatchers(HttpMethod.POST, "/hospitals/{id}/patient-registration/hmo").hasAuthority(Role.PATIENT.name())
                         .requestMatchers(HttpMethod.POST, "/appointments/{hospitalId}/{hospital_patient_id}/request").hasAuthority(Role.PATIENT.name())
                         .requestMatchers(HttpMethod.PATCH, "/appointments/{hospital_Id}/{hospital_patient_id}/{appointment_Id}/accept").hasAuthority(Role.PATIENT.name())
