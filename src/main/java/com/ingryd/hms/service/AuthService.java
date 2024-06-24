@@ -80,7 +80,7 @@ public class AuthService {
         //generate token and send verification mail
         int token = tokenService.generateToken();
         Token savedToken = tokenService.saveToken(token, adminUser);
-        //ToDo: send mail below
+
         mailService.sendEmailVerificationMail(adminUser, token);
 
         //response
