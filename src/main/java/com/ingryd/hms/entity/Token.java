@@ -20,7 +20,7 @@ public class Token {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @Column(unique = true, length = 4)
+    @Column(unique = true, length = 4, name = "\"value\"")
     private int value;
 
     @ManyToOne(optional = false)

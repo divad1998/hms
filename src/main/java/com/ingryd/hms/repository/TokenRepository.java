@@ -9,6 +9,7 @@ import javax.swing.text.html.Option;
 import java.util.Optional;
 
 public interface TokenRepository extends JpaRepository<Token, Integer> {
-    Optional<Token> findByValue(int value);
+    @Query("SELECT t FROM tokens t WHERE t.value = :value")
+    Token findByValue(int value);
     Optional<Token> findByUser_id(Long userId);
 }

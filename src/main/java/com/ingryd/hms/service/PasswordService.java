@@ -49,9 +49,9 @@ public class PasswordService {
     }
 
     public void passwordReset(PasswordDTO dto) throws Exception{
-        Optional<Token> token = tokenRepository.findByValue(dto.getToken());
-        if (token.isPresent()){
-            User user = token.get().getUser();
+        Token token = tokenRepository.findByValue(dto.getToken());
+        if (token != null){
+            User user = token.getUser();
             assert user != null;
             if (dto.getNewPassword().equals(dto.getNewPasswordRetyped())) {
                 user.setPassword(dto.getNewPassword());

@@ -102,16 +102,16 @@ public class AuthService {
 
     public void emailVerification(int value) throws Exception{
         if (value > 0){
-            Optional<Token> tokenOptional = tokenRepository.findByValue(value);
-            if (tokenOptional.isEmpty())
+            Token token = tokenRepository.findByValue(value);
+            if (token == null)
                 throw new InvalidException("Invalid token.");
-            Token dbtoken = tokenOptional.get();
-            if (dbtoken.getExpiresAt().isBefore(LocalDateTime.now()))
+            //Token dbtoken = tokenOptional.get();
+            if (token.getExpiresAt().isBefore(LocalDateTime.now()))
                 throw new InvalidException("Expired token. Request for a new token.");
 
-            User user = dbtoken.getUser();
+            User user = token.getUser();
             if (user == null) {
-                log.error("User not found for token with id: {}", dbtoken.getId());
+                log.error("User not found for token with id: {}", token.getId());
                 throw new InternalServerException("Internal error. Kindly contact support.");
             }
             user.setEnabled(true);

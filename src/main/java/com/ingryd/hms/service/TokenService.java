@@ -21,8 +21,8 @@ public class TokenService {
     protected int generateToken() {
         int token = new Random().nextInt(0,9999);
         //existing?
-        boolean exists = tokenRepository.findByValue(token).isPresent();
-        if (exists) {
+        Token existingToken = tokenRepository.findByValue(token);
+        if (existingToken != null) {
             generateToken();
         }
         return token;
