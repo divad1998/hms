@@ -28,7 +28,7 @@ public class MailService {
             MimeMessage mimeMessage = mailSender.createMimeMessage();
             MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage, true, "utf-8");
             messageHelper.setTo(user.getEmail());
-            messageHelper.setFrom("HealthGRYD");
+            messageHelper.setFrom("hospitalmanagementsystem1.0@gmail.com", "HealthGRYD");
             messageHelper.setSubject("Verify your email");
             messageHelper.setText("Dear " + user.getFirstName() + "," + " kindly hit: " + "https://healthgryd.onrender.com/api/v1/auth/email_verification/" + token + " to verify your email.");
 
@@ -46,7 +46,7 @@ public class MailService {
             MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage, true, "utf-8");
             messageHelper.setSubject("Reset your password");
             messageHelper.setTo(user.getEmail());
-            messageHelper.setFrom("HealthGRYD");
+            messageHelper.setFrom("hospitalmanagementsystem1.0@gmail.com", "HealthGRYD");
             messageHelper.setText(String.format("Dear %s, \nKindly hit: %s to reset your password. \nIf you didn't request this code, you can ignore this email", user.getFirstName(), "https://healthgryd.onrender.com/api/v1/reset_password/" + token));
             mailSender.send(messageHelper.getMimeMessage());
         } catch (Exception e){
@@ -61,7 +61,7 @@ public class MailService {
             MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage, true, "utf-8");
             messageHelper.setSubject("Reset your password");
             messageHelper.setTo(user.getEmail());
-            messageHelper.setFrom("HealthGRYD");
+            messageHelper.setFrom("hospitalmanagementsystem1.0@gmail.com", "HealthGRYD");
             messageHelper.setText(String.format("Dear %s, \nYour reset token is %s. Click kindly hit: %s to reset your password. \nIf you didn't request this code, you can safely ignore this email", user.getFirstName(), token, "https://healthgryd.onrender.com/api/v1/reset-password"));
             mailSender.send(messageHelper.getMimeMessage());
         } catch (Exception e){
