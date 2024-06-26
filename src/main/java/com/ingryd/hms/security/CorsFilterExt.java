@@ -14,7 +14,6 @@ import java.io.IOException;
 public class CorsFilterExt extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        //add cors header to the response headers
         String value = response.getHeader("Access-Control-Allow-Origin");
         if (value == null) {
             response.addHeader("Access-Control-Allow-Origin", "*");

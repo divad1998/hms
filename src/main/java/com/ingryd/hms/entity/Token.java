@@ -27,6 +27,8 @@ public class Token {
     private User user;
 
     private LocalDateTime createdAt;
+
+    @Column(nullable = false)
     private LocalDateTime expiresAt;
 
     @PrePersist

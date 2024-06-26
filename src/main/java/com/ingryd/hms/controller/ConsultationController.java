@@ -22,7 +22,6 @@ import java.util.List;
 @RequestMapping("/consultations")
 @RequiredArgsConstructor
 public class ConsultationController {
-
     private final ConsultationService consultationService;
 
     @PostMapping
