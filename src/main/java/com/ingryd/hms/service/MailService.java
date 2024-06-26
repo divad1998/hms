@@ -25,6 +25,7 @@ public class MailService {
     @Async
     public void sendEmailVerificationMail(User user, int token) {
         try {
+            //build mail
             MimeMessage mimeMessage = mailSender.createMimeMessage();
             MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage, true, "utf-8");
             messageHelper.setTo(user.getEmail());
@@ -32,6 +33,7 @@ public class MailService {
             messageHelper.setSubject("Verify your email");
             messageHelper.setText("Dear " + user.getFirstName() + "," + " kindly hit: " + "https://healthgryd.onrender.com/api/v1/auth/email_verification/" + token + " to verify your email.");
 
+            //send
             mailSender.send(messageHelper.getMimeMessage());
         } catch (Exception e) {
             Logger logger = LoggerFactory.getLogger(this.getClass().getName());
