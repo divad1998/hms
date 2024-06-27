@@ -106,6 +106,7 @@ public class AppointmentService {
         //ToDo: send in-app notifications to consultants
         //build response
         Response response = new Response();
+        response.setStatus(true);
         response.setMessage("Appointment requested successfully.");
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
