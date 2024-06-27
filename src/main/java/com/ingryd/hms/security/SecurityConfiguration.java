@@ -28,8 +28,8 @@ public class SecurityConfiguration {
     @Autowired
     private JwtFilter jwtFilter;
 
-    @Autowired
-    private CorsFilterExt corsFilterExt;
+//    @Autowired
+//    private CorsFilterExt corsFilterExt;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception{
@@ -80,8 +80,8 @@ public class SecurityConfiguration {
                         .requestMatchers(HttpMethod.GET, "/lab_tests/{consultation_id}").hasAuthority(Role.CONSULTANT.name())
                         .requestMatchers(HttpMethod.GET, "/medical_history").hasAuthority(Role.PATIENT.name())
                         .anyRequest().authenticated())
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
-                .addFilterAfter(corsFilterExt, JwtFilter.class);
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+               //.addFilterAfter(corsFilterExt, JwtFilter.class);
 
         return httpSecurity.build();
     }
