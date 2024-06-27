@@ -16,7 +16,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/lab_tests")
-@CrossOrigin
+@CrossOrigin(origins = "*")
 public class LabTestController {
 
     private final LabTestService testService;

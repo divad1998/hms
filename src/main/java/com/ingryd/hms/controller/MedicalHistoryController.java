@@ -17,7 +17,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/medical_history")
-@CrossOrigin
+@CrossOrigin(origins = "*")
 public class MedicalHistoryController {
     @Autowired
     private MedicalHistoryService medicalHistoryService;

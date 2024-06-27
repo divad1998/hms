@@ -21,7 +21,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/consultations")
 @RequiredArgsConstructor
-@CrossOrigin
+@CrossOrigin(origins = "*")
 public class ConsultationController {
     private final ConsultationService consultationService;
 

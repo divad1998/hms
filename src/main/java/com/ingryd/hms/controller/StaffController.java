@@ -20,7 +20,7 @@ import java.util.Set;
 @RestController
 @RequestMapping("/staff")
 @RequiredArgsConstructor
-@CrossOrigin
+@CrossOrigin(origins = "*")
 public class StaffController {
     private final StaffService staffService;
 

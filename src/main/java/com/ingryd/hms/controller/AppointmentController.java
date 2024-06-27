@@ -22,7 +22,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/appointments")
 @RequiredArgsConstructor
-@CrossOrigin
+@CrossOrigin(origins = "*")
 public class AppointmentController {
     private final AppointmentService appointmentService;
 

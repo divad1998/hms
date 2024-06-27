@@ -21,7 +21,7 @@ import java.util.Set;
 @AllArgsConstructor
 @RestController
 @RequestMapping("/hospitals")
-@CrossOrigin
+@CrossOrigin(origins = "*")
 public class HospitalController {
     private final HospitalService hospitalService;
     private final HospitalPatientService patientService;
