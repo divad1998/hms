@@ -116,6 +116,7 @@ public class AuthService {
             }
             user.setEnabled(true);
             userRepository.save(user);
+            tokenRepository.delete(token);
         } else {
             throw new InvalidException("Token is required.");
         }
