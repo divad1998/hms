@@ -30,6 +30,7 @@ import java.util.Optional;
 @RestController
 @AllArgsConstructor
 @RequestMapping("/auth")
+@CrossOrigin
 public class AuthController {
 
     @Autowired

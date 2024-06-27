@@ -20,6 +20,7 @@ import java.util.Set;
 @RestController
 @RequestMapping("/staff")
 @RequiredArgsConstructor
+@CrossOrigin
 public class StaffController {
     private final StaffService staffService;
 

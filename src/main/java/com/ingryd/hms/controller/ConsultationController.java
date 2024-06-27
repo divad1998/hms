@@ -21,6 +21,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/consultations")
 @RequiredArgsConstructor
+@CrossOrigin
 public class ConsultationController {
     private final ConsultationService consultationService;
 
